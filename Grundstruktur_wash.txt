@@ -1,0 +1,11 @@
+Grundstruktur:
+
+
+GUI: Log in, Waschmaschine 4x/ Trockner 2x, Stromzähler, Abrechnungs Button (PW geschützt)
+Datenbank: MySQL (persönliche ID/Benutzer/ oder Email, Passwort, Name, Zimmernummer, Strom) ; 
+bei Untermieter automatische Löschung nach x Monaten 
+Python:
+Skript 1: GUI muss an die Datenbank geschickt werden
+Skript 2: Abrechnung -> an bestimmte Mail weiterleiten
+
+optional: App die alles anzeigt und Abrechnung macht 
