@@ -69,7 +69,7 @@ MACHINES = [
 r = StringVar()
 line = 3
 for text, machine in MACHINES:
-    Radiobutton(root, text=text, variable=r, value=machine, command=lambda: newSelection(r.get())).grid(row=line, column=10)
+    Radiobutton(root, text=text, variable=r, value=machine, tristatevalue=0, command=lambda: newSelection(r.get())).grid(row=line, column=10)
     line += 1
 
 
