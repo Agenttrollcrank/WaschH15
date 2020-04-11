@@ -1,4 +1,21 @@
 from tkinter import *
+import mysql.connector
+
+#mysql connection
+mydb = mysql.connector.connect(
+    user='root',
+    password='root',
+    host='127.0.0.1',
+    database='sys')
+
+mycursor = mydb.cursor()
+
+mycursor.execute("SELECT * FROM strom")
+
+myresult = mycursor.fetchall()
+
+for row in myresult:
+    print(myresult)
 
 #define the windown
 root = Tk()
@@ -11,20 +28,7 @@ electricityOldValue = 0
 #define the function for buttons
 def myClick(): #excecute button
     selection = r.get()
-    if selection == "Altbau":
-        print(selection)
-    elif selection == "Linke Maschine":
-        print(selection)
-    elif selection == "Mitlere Maschine":
-        print(selection)
-    elif selection == "Rechte Maschine":
-        print(selection)
-    elif selection == "Trockner Oben":
-        print(selection)
-    elif selection == "Trockner Unten":
-        print(selection)
-    else:
-        exit(1)
+    print(selection)
 
 def newSelection(t): #machine choice buttons, changes the text and previous value TODO: change the values to the ones from the database
     machineSelection.config(text=t)
@@ -71,9 +75,6 @@ line = 3
 for text, machine in MACHINES:
     Radiobutton(root, text=text, variable=r, value=machine, tristatevalue=0, command=lambda: newSelection(r.get())).grid(row=line, column=10)
     line += 1
-
-
-
 
 #showing it on screen
 titleLabel.grid(row=0, column=10)
