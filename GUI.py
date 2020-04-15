@@ -1,6 +1,5 @@
 from tkinter import *
 import mysql.connector
-import time
 
 #mysql connection
 mydb = mysql.connector.connect(
@@ -11,7 +10,6 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor(buffered=True)
 
-
 #define the windown
 root = Tk()
 root.title("WaschH15")
@@ -20,10 +18,6 @@ root.geometry("500x500")
 #variable definitions
 sl = 0
 electricityOldValue = int
-
-
-
-
 
 #define the function for buttons
 def myClick(): #excecute button
@@ -36,21 +30,22 @@ def myClick(): #excecute button
                 try: #checks the value inputted
                     mycursor.execute("UPDATE sys.strom SET Kwh = " + str(electricityNewBox.get()) +
                                      " WHERE Waschmachine = '" + str(machineString.get()) + "'")
-                    Label(root, text="Alles Klar! Danke dir! Vergesse nicht deine Wäsche :D").grid(row=14, column=10)
+                    message.config(text="Alles Klar! Danke dir! Vergesse nicht deine Wäsche :D")
+                    electricityOldBox.delete(0, END)
+                    electricityOldBox.insert(0, electricityNewBox.get())
                     usernameIN.delete(0, END)
                     passwordIN.delete(0, END)
                 except:
-                    error.config(text="Bitte geben Sie einen zahl an")
+                    message.config(text="Bitte geben Sie einen zahl an")
             else:  # ValueError
-                error.config(text="Bitte geben Sie einen größeren Wert ein")
+                message.config(text="Bitte geben Sie einen größeren Wert ein")
             electricityNewBox.delete(0, END)
         else:
-            error.config(text="Falsche Passwort")
+            message.config(text="Falsche Passwort")
     else:
-        error.config(text="Falsche Benutzername")
+        message.config(text="Falsche Benutzername")
     mydb.commit()
     #TODO add new entry
-    #TODO take the new electricity value from the database
 
 def newSelection(): #machine choice buttons, changes the text and previous value
     global electricityOldValue
@@ -73,7 +68,6 @@ def newSelection(): #machine choice buttons, changes the text and previous value
     electricityOldValue = mycursor.fetchone()
     electricityOldBox.delete(0, END)
     electricityOldBox.insert(0, electricityOldValue)
-
 
 titleLabel = Label(root, text="WaschH15")
 machineSelection = Label(root, text="")
@@ -114,7 +108,7 @@ electricityOldBox.grid(row=11, column=10)
 electricityNewLabel = Label(root, text="Neuer Strom Stand: ").grid(row=12, column=9)
 electricityNewBox.grid(row=12, column=10)
 login.grid(row=13, column=10)
-error = Label(root, text="")
-error.grid(row=14, column=9)
+message = Label(root, text="")
+message.grid(row=14, column=10)
 
 root.mainloop()
