@@ -1,5 +1,6 @@
 from tkinter import *
 import mysql.connector
+import time
 
 #mysql connection
 mydb = mysql.connector.connect(
@@ -17,8 +18,12 @@ root.title("WaschH15")
 root.geometry("500x500")
 
 #variable definitions
-electricityOldValue = 0 #defined because it needs to be public
 sl = 0
+electricityOldValue = int
+
+
+
+
 
 #define the function for buttons
 def myClick(): #excecute button
@@ -27,28 +32,28 @@ def myClick(): #excecute button
     if mycursor.fetchone()[0]:
         mycursor.execute("SELECT COUNT(1) FROM sys.benutzer WHERE passwort='%s'" % (passwordIN.get()))
         if mycursor.fetchone()[0]:
-            try: #checks the value inputted
-                if int(electricityNewBox.get()) >= electricityOldValue:
-                    mycursor.execute(
-                        "UPDATE sys.strom SET Kwh = " + str(electricityNewBox.get()) + " WHERE Waschmachine = '" + str(
-                            machineString.get()) + "'")
-                else:
-                    Label(root, text="Bitte geben Sie einen größeren Wert ein").grid(row=14, column=9)
-            except:  # ValueError
-                Label(root, text="Bitte geben Sie eine Zahl ein").grid(row=14, column=9)
-            electricityOldBox.delete(0, END)
+            if int(electricityNewBox.get()) >= electricityOldValue[0]:
+                try: #checks the value inputted
+                    mycursor.execute("UPDATE sys.strom SET Kwh = " + str(electricityNewBox.get()) +
+                                     " WHERE Waschmachine = '" + str(machineString.get()) + "'")
+                    Label(root, text="Alles Klar! Danke dir! Vergesse nicht deine Wäsche :D").grid(row=14, column=10)
+                    usernameIN.delete(0, END)
+                    passwordIN.delete(0, END)
+                except:
+                    error.config(text="Bitte geben Sie einen zahl an")
+            else:  # ValueError
+                error.config(text="Bitte geben Sie einen größeren Wert ein")
             electricityNewBox.delete(0, END)
-            usernameIN.delete(0, END)
-            passwordIN.delete(0, END)
         else:
-            Label(root, text="Falsche Password").grid(row=14, column=9)
+            error.config(text="Falsche Passwort")
     else:
-        Label(root, text="Unbekante Benutzername").grid(row=14, column=9)
+        error.config(text="Falsche Benutzername")
     mydb.commit()
     #TODO add new entry
     #TODO take the new electricity value from the database
 
 def newSelection(): #machine choice buttons, changes the text and previous value
+    global electricityOldValue
     machineSelection.config(text=machineString.get())
     if machineString.get() == "Altbau":
         sl = 0
@@ -65,7 +70,7 @@ def newSelection(): #machine choice buttons, changes the text and previous value
     else:
         exit(1)
     mycursor.execute("SELECT Kwh FROM sys.strom LIMIT " + str(sl) +",1")
-    electricityOldValue = mycursor.fetchall()
+    electricityOldValue = mycursor.fetchone()
     electricityOldBox.delete(0, END)
     electricityOldBox.insert(0, electricityOldValue)
 
@@ -74,12 +79,12 @@ titleLabel = Label(root, text="WaschH15")
 machineSelection = Label(root, text="")
 
 usernameIN = Entry(root, width=40)
-passwordIN = Entry(root, width=40)
+passwordIN = Entry(root, show="*", width=40)
 electricityOldBox = Entry(root, width=40)
 electricityOldBox.insert(0,0)
 electricityNewBox = Entry(root, width=40)
 
-login = Button(root, text="Login", command=myClick, bg="#ff00ff")
+login = Button(root, text="WASCHEN!!!", command=myClick, bg="#ff00ff")
 #defining the radio buttons
 MACHINES = [
     ("Altbau", "Altbau"),
@@ -109,5 +114,7 @@ electricityOldBox.grid(row=11, column=10)
 electricityNewLabel = Label(root, text="Neuer Strom Stand: ").grid(row=12, column=9)
 electricityNewBox.grid(row=12, column=10)
 login.grid(row=13, column=10)
+error = Label(root, text="")
+error.grid(row=14, column=9)
 
 root.mainloop()
