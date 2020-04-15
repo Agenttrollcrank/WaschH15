@@ -25,7 +25,7 @@ def myClick(): #excecute button
     #credential check
     mycursor.execute("SELECT COUNT(1) FROM sys.benutzer WHERE username='%s'" % (usernameIN.get()))
     if mycursor.fetchone()[0]:
-        mycursor.execute("SELECT COUNT(1) FROM sys.benutzer WHERE password='%s'" % (passwordIN.get()))
+        mycursor.execute("SELECT COUNT(1) FROM sys.benutzer WHERE passwort='%s'" % (passwordIN.get()))
         if mycursor.fetchone()[0]:
             try: #checks the value inputted
                 if int(electricityNewBox.get()) >= electricityOldValue:
