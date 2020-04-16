@@ -59,7 +59,12 @@ CREATE TABLE strom (
 -- Dumping data for table `strom`
 --
 
-INSERT INTO strom VALUES ('Waschmachine 1',80000,NULL);
+INSERT INTO strom VALUES ('Altbau',80000,NULL);
+INSERT INTO strom VALUES ('Linke_Maschine',80000,NULL);
+INSERT INTO strom VALUES ('Mittlere_Maschine',80000,NULL);
+INSERT INTO strom VALUES ('Rechte_Maschine',80000,NULL);
+INSERT INTO strom VALUES ('Trockner_Oben',80000,NULL);
+INSERT INTO strom VALUES ('Trockner_Unten',80000,NULL);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
