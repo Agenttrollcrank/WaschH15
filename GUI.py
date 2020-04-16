@@ -3,10 +3,10 @@ import mysql.connector
 
 #mysql connection
 mydb = mysql.connector.connect(
-    user='root',
-    password='root',
-    host='127.0.0.1',
-    database='sys')
+    user='Yulian',
+    password='FreddyIstGeil',
+    host='134.130.188.10',
+    database='h15')
 
 mycursor = mydb.cursor(buffered=True)
 
@@ -22,13 +22,13 @@ electricityOldValue = int
 #define the function for buttons
 def myClick(): #excecute button
     #credential check
-    mycursor.execute("SELECT COUNT(1) FROM sys.benutzer WHERE username='%s'" % (usernameIN.get()))
+    mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameIN.get()))
     if mycursor.fetchone()[0]:
-        mycursor.execute("SELECT COUNT(1) FROM sys.benutzer WHERE passwort='%s'" % (passwordIN.get()))
+        mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(),usernameIN.get()))
         if mycursor.fetchone()[0]:
             if int(electricityNewBox.get()) >= electricityOldValue[0]:
                 try: #checks the value inputted
-                    mycursor.execute("UPDATE sys.strom SET Kwh = " + str(electricityNewBox.get()) +
+                    mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityNewBox.get()) +
                                      " WHERE Waschmachine = '" + str(machineString.get()) + "'")
                     message.config(text="Alles Klar! Danke dir! Vergesse nicht deine Wäsche :D")
                     electricityOldBox.delete(0, END)
@@ -64,7 +64,7 @@ def newSelection(): #machine choice buttons, changes the text and previous value
         sl = 5
     else:
         exit(1)
-    mycursor.execute("SELECT Kwh FROM sys.strom LIMIT " + str(sl) +",1")
+    mycursor.execute("SELECT Kwh FROM h15.strom LIMIT " + str(sl) +",1")
     electricityOldValue = mycursor.fetchone()
     electricityOldBox.delete(0, END)
     electricityOldBox.insert(0, electricityOldValue)
