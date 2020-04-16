@@ -78,7 +78,7 @@ electricityOldBox = Entry(root, width=40)
 electricityOldBox.insert(0,0)
 electricityNewBox = Entry(root, width=40)
 
-login = Button(root, text="WASCHEN!!!", command=myClick, bg="#ff00ff")
+login = Button(root, text="WASCHEN!!!", command=myClick)
 #defining the radio buttons
 MACHINES = [
     ("Altbau", "Altbau"),
@@ -110,5 +110,10 @@ electricityNewBox.grid(row=12, column=10)
 login.grid(row=13, column=10)
 message = Label(root, text="")
 message.grid(row=14, column=10)
+
+#TODO display last user behind the machine
+#TODO radio button from left to right
+#TODO graphical shit, Logo, Big label,
+#TODO Table for feedback
 
 root.mainloop()
