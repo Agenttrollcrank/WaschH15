@@ -71,18 +71,21 @@ def logout(): #excecute button
             mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (
             passwordIN.get(), usernameIN.get()))
             if mycursor.fetchone()[0]:
-                try:# checks the value inputted
-                    mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityOldValue) +
-                                     " WHERE Waschmachine = '" + str(machineString.get()) + "'")
-                    mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
-                        str(usernameIN.get()), str(machineString.get()), str(electricityOldValue), "NULL"))
-                    message.config(text="Alles Klar! Danke dir! :D")
-                    electricityNewBox.delete(0, END)
-                    electricityNewBox.insert(0, electricityNewBox.get())
-                    passwordIN.delete(0, END)
-                except:
-                    print()
-                    message.config(text="Irgendein Error ist aufgetreten, sorry...")
+                if int(electricityNewBox.get()) >= electricityOldValue:
+                    try:# checks the value inputted
+                        mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityOldValue) +
+                                         " WHERE Waschmachine = '" + str(machineString.get()) + "'")
+                        mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
+                            str(usernameIN.get()), str(machineString.get()), str(electricityOldValue), "NULL"))
+                        message.config(text="Alles Klar! Danke dir! :D")
+                        electricityNewBox.delete(0, END)
+                        electricityNewBox.insert(0, electricityNewBox.get())
+                        passwordIN.delete(0, END)
+                    except:
+                        print()
+                        message.config(text="Irgendein Error ist aufgetreten, sorry...")
+                else:  # ValueError
+                    message.config(text="Bitte geben Sie einen größeren Wert ein")
             else:
                 message.config(text="Falsche Passwort")
         else:
@@ -153,7 +156,7 @@ usernameOptions = ttk.Combobox(Wasch, value=usernames)
 usernameOptions.current(0)
 passwordIN = Entry(Wasch, show="*", width=25)
 electricityNewBox = Entry(Wasch, width=25)
-logout = Button(Wasch, text="Logout", command=logout)
+logout = Button(Wasch, text="Eintragen", command=logout)
 
 #defining the radio buttons
 def newSelection(): #machine choice buttons, changes the text and previous value
@@ -224,7 +227,7 @@ passwordLabel.config(font=('Arial', 18))
 passwordIN.grid(row=2, column=1)
 passwordIN.config(font=('Arial', 18))
 
-electricityNewLabel = Label(Wasch, text="Neuer Strom Stand: ")
+electricityNewLabel = Label(Wasch, text="Strom Stand: ")
 electricityNewLabel.grid(row=12, column=0)
 electricityNewLabel.config(font=('Arial', 18))
 
