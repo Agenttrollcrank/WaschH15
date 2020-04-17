@@ -19,7 +19,7 @@ Wasch = LabelFrame(root, padx=5, pady=5)
 Table = LabelFrame(root, padx=5, pady=5)
 
 try:
-    logo = PhotoImage(file="C:/Users/Yulian/Desktop/WaschH15-master/hermann-logo-40.png")
+    logo = PhotoImage(file="D:/Github/WaschH15/hermann-logo-40.png")
 except:
     pass
 
@@ -69,7 +69,7 @@ def tableUpdate(mch):
                 Table.grid_columnconfigure((column),weight=1)
         else:
             for column in range(3):
-                mycursor.execute("SELECT %s FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') LIMIT %s,1" % (str(values[column]), mch, (row-1)))
+                mycursor.execute("SELECT %s FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_bist DESC limit %s,1" % (str(values[column]), mch, str(row-1)))
                 label = Label(Table, text=mycursor.fetchone(), bg="white", fg="black", padx=30, pady=3)
                 label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
                 label.config(font=('Arial', 18))
@@ -78,7 +78,6 @@ def tableUpdate(mch):
 
 
 titleLabel = Label(root, text="WaschH15")
-logolabel = Label(root, image=logo, justify=RIGHT)
 usernameLabel = Label(Wasch, text="Benutzername: ")
 passwordLabel = Label(Wasch, text="Passwort: ")
 machineSelection = Label(Wasch, text="")
@@ -135,7 +134,11 @@ for text, machine in MACHINES:
     line += 1
 
 #showing it on screen
-logolabel.pack()
+try:
+    logolabel = Label(root, image=logo, justify=RIGHT)
+    logolabel.pack()
+except:
+    pass
 titleLabel.pack()
 titleLabel.config(font=('Arial', 24))
 Wasch.pack()
