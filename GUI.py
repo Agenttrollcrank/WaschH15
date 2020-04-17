@@ -15,8 +15,10 @@ root = Tk()
 root.title("WaschH15")
 root.geometry("1920x1080")
 
-Wasch = LabelFrame(root, padx=5,pady=5)
-Table = LabelFrame(root, padx=5,pady=5)
+Wasch = LabelFrame(root, padx=5, pady=5)
+Table = LabelFrame(root, padx=5, pady=5)
+
+logo = PhotoImage(file="C:/Users/Yulian/Desktop/WaschH15-master/hermann-logo-40.png")
 
 
 #variable definitions
@@ -74,6 +76,7 @@ def tableUpdate(mch):
 
 
 titleLabel = Label(root, text="WaschH15")
+logolabel = Label(root, image=logo, justify=RIGHT)
 usernameLabel = Label(Wasch, text="Benutzername: ")
 passwordLabel = Label(Wasch, text="Passwort: ")
 machineSelection = Label(Wasch, text="")
@@ -130,6 +133,7 @@ for text, machine in MACHINES:
     line += 1
 
 #showing it on screen
+logolabel.pack()
 titleLabel.pack()
 titleLabel.config(font=('Arial', 24))
 Wasch.pack()
@@ -166,7 +170,6 @@ message = Label(Wasch, text="")
 message.config(font=('Arial', 18))
 message.grid(row=14, column=0)
 
-tableUpdate("Altbau")
 
 #TODO graphical shit, Logo, Big label,
 root.mainloop()
