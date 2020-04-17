@@ -29,35 +29,67 @@ sl = 0
 electricityOldValue = int
 
 #define the function for buttons
-def myClick(): #excecute button
+def logout(): #excecute button
     #credential checkg
-    mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameIN.get()))
-    if mycursor.fetchone()[0]:
-        mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(), usernameIN.get()))
+    mycursor.execute("SELECT username FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit 0,1" % (machineString.get()))
+    lastuser = str(mycursor.fetchone())
+    lastuser = lastuser.replace("('","")
+    lastuser = lastuser.replace("',)","")
+    mycursor.execute(
+        "SELECT strom_bist FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit 0,1" % (machineString.get(),))
+    stromlehr = str(mycursor.fetchone())
+    if lastuser == usernameIN.get() and stromlehr == "(None,)":
+        mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameIN.get()))
         if mycursor.fetchone()[0]:
-            if int(electricityNewBox.get()) >= electricityOldValue[0]:
-                try:#checks the value inputted
-                    mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityNewBox.get()) +
+            mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(), usernameIN.get()))
+            if mycursor.fetchone()[0]:
+                if int(electricityNewBox.get()) >= electricityOldValue:
+                    try:
+                        #checks the value inputted
+                        mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityNewBox.get()) +
+                                         " WHERE Waschmachine = '" + str(machineString.get()) + "'")
+                        mycursor.execute("UPDATE h15.abrechnung SET strom_bist = %s WHERE username = '%s' AND machine = '%s' ORDER BY strom_von DESC LIMIT 1" % (str(electricityNewBox.get()), usernameIN.get(), machineString.get()))
+                        message.config(text="Alles Klar! Danke dir! :D")
+                        electricityNewBox.delete(0, END)
+                        electricityNewBox.insert(0, electricityNewBox.get())
+                        passwordIN.delete(0, END)
+                    except:
+                        print()
+                        message.config(text="Irgendein Error ist aufgetreten, sorry...")
+                else:  # ValueError
+                    message.config(text="Bitte geben Sie einen größeren Wert ein")
+                electricityNewBox.delete(0, END)
+            else:
+                message.config(text="Falsche Passwort")
+        else:
+            message.config(text="Falsche Benutzername")
+        mydb.commit()
+        tableUpdate(str(machineString.get()))
+    else:
+        mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameIN.get()))
+        if mycursor.fetchone()[0]:
+            mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (
+            passwordIN.get(), usernameIN.get()))
+            if mycursor.fetchone()[0]:
+                try:# checks the value inputted
+                    mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityOldValue) +
                                      " WHERE Waschmachine = '" + str(machineString.get()) + "'")
                     mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
-                    str(usernameIN.get()), str(machineString.get()), str(electricityOldValue[0]),
-                    str(electricityNewBox.get())))
+                        str(usernameIN.get()), str(machineString.get()), str(electricityOldValue), "NULL"))
                     message.config(text="Alles Klar! Danke dir! :D")
-                    electricityOldBox.delete(0, END)
-                    electricityOldBox.insert(0, electricityNewBox.get())
+                    electricityNewBox.delete(0, END)
+                    electricityNewBox.insert(0, electricityNewBox.get())
                     passwordIN.delete(0, END)
                 except:
                     print()
                     message.config(text="Irgendein Error ist aufgetreten, sorry...")
-            else:  # ValueError
-                message.config(text="Bitte geben Sie einen größeren Wert ein")
-            electricityNewBox.delete(0, END)
+            else:
+                message.config(text="Falsche Passwort")
         else:
-            message.config(text="Falsche Passwort")
-    else:
-        message.config(text="Falsche Benutzername")
-    mydb.commit()
-    tableUpdate(str(machineString.get()))
+            message.config(text="Falsche Benutzername")
+        mydb.commit()
+        tableUpdate(str(machineString.get()))
+
 def tableUpdate(mch):
     headings = ["Name","Strom Von","Strom Bist"]
     values = ["username","strom_von","strom_bist"]
@@ -68,9 +100,32 @@ def tableUpdate(mch):
                 label.grid(row=row,column=(column),sticky="nsew",padx=1,pady=1)
                 label.config(font=('Arial', 18, "bold"))
                 Table.grid_columnconfigure((column),weight=1)
+        elif row == 1:
+            for column in range(3):
+                if column == 2:
+                    mycursor.execute("SELECT %s FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit %s,1" % (str(values[column]), mch, str(row-1)))
+                    if str(mycursor.fetchone()) == "(None,)":
+                        label = Label(Table, text=" ", bg="white", fg="black", padx=30, pady=3)
+                    else:
+                        mycursor.execute(
+                            "SELECT %s FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit %s,1" % (
+                            str(values[column]), mch, str(row - 1)))
+                        label = Label(Table, text=mycursor.fetchone(), bg="white", fg="black", padx=30, pady=3)
+                    label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
+                    label.config(font=('Arial', 18))
+                    Table.grid_columnconfigure(column, weight=1)
+                else:
+                    for column in range(3):
+                        mycursor.execute(
+                            "SELECT %s FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit %s,1" % (
+                            str(values[column]), mch, str(row - 1)))
+                        label = Label(Table, text=mycursor.fetchone(), bg="white", fg="black", padx=30, pady=3)
+                        label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
+                        label.config(font=('Arial', 18))
+                        Table.grid_columnconfigure(column, weight=1)
         else:
             for column in range(3):
-                mycursor.execute("SELECT %s FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_bist DESC limit %s,1" % (str(values[column]), mch, str(row-1)))
+                mycursor.execute("SELECT %s FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit %s,1" % (str(values[column]), mch, str(row-1)))
                 label = Label(Table, text=mycursor.fetchone(), bg="white", fg="black", padx=30, pady=3)
                 label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
                 label.config(font=('Arial', 18))
@@ -97,10 +152,8 @@ usernameIN.set(usernames[0])
 usernameOptions = ttk.Combobox(Wasch, value=usernames)
 usernameOptions.current(0)
 passwordIN = Entry(Wasch, show="*", width=25)
-electricityOldBox = Entry(Wasch, width=25)
-electricityOldBox.insert(0,0)
 electricityNewBox = Entry(Wasch, width=25)
-login = Button(Wasch, text="Login", command=myClick)
+logout = Button(Wasch, text="Logout", command=logout)
 
 #defining the radio buttons
 def newSelection(): #machine choice buttons, changes the text and previous value
@@ -127,9 +180,12 @@ def newSelection(): #machine choice buttons, changes the text and previous value
     else:
         exit(1)
     mycursor.execute("SELECT Kwh FROM h15.strom LIMIT " + str(sl) +",1")
-    electricityOldValue = mycursor.fetchone()
-    electricityOldBox.delete(0, END)
-    electricityOldBox.insert(0, electricityOldValue)
+    electricityOldValue = str(mycursor.fetchone())
+    electricityOldValue = electricityOldValue.replace("(", "")
+    electricityOldValue = electricityOldValue.replace(",)", "")
+    electricityOldValue = int(electricityOldValue)
+    electricityNewBox.delete(0, END)
+    electricityNewBox.insert(0, electricityOldValue)
 MACHINES = [
     ("Altbau", "Altbau"),
     ("Linke Maschine", "Linke_Maschine"),
@@ -168,13 +224,6 @@ passwordLabel.config(font=('Arial', 18))
 passwordIN.grid(row=2, column=1)
 passwordIN.config(font=('Arial', 18))
 
-electricityOldLabel = Label(Wasch, text="Vorheriger Strom Stand: ")
-electricityOldLabel.grid(row=11, column=0)
-electricityOldLabel.config(font=('Arial', 18))
-
-electricityOldBox.grid(row=11, column=1)
-electricityOldBox.config(font=('Arial', 18))
-
 electricityNewLabel = Label(Wasch, text="Neuer Strom Stand: ")
 electricityNewLabel.grid(row=12, column=0)
 electricityNewLabel.config(font=('Arial', 18))
@@ -182,13 +231,11 @@ electricityNewLabel.config(font=('Arial', 18))
 electricityNewBox.grid(row=12, column=1)
 electricityNewBox.config(font=('Arial', 18))
 
-login.grid(row=13, column=1,sticky="w")
-login.config(font=('Arial', 18))
+logout.grid(row=13, column=1,sticky="w")
+logout.config(font=('Arial', 18))
 
 message = Label(Wasch, text="")
 message.config(font=('Arial', 18))
 message.grid(row=14, column=0)
 
-
-#TODO graphical shit, Logo, Big label,
 root.mainloop()
