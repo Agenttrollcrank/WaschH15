@@ -1,5 +1,6 @@
 from tkinter import *
 import mysql.connector
+from tkinter import ttk
 
 #mysql connection
 mydb = mysql.connector.connect(
@@ -29,10 +30,10 @@ electricityOldValue = int
 
 #define the function for buttons
 def myClick(): #excecute button
-    #credential check
+    #credential checkg
     mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameIN.get()))
     if mycursor.fetchone()[0]:
-        mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(),usernameIN.get()))
+        mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(), usernameIN.get()))
         if mycursor.fetchone()[0]:
             if int(electricityNewBox.get()) >= electricityOldValue[0]:
                 try:#checks the value inputted
@@ -44,9 +45,9 @@ def myClick(): #excecute button
                     message.config(text="Alles Klar! Danke dir! :D")
                     electricityOldBox.delete(0, END)
                     electricityOldBox.insert(0, electricityNewBox.get())
-                    usernameIN.delete(0, END)
                     passwordIN.delete(0, END)
                 except:
+                    print()
                     message.config(text="Irgendein Error ist aufgetreten, sorry...")
             else:  # ValueError
                 message.config(text="Bitte geben Sie einen größeren Wert ein")
@@ -76,17 +77,30 @@ def tableUpdate(mch):
                 Table.grid_columnconfigure(column, weight=1)
 
 
+#username combobox
+mycursor.execute("SELECT username FROM h15.benutzer")
+usernames = mycursor.fetchall()
+usercount = 0
+for user in usernames:
+    clean = str(user).replace("('","")
+    clean = clean.replace("',)","")
+    usernames[usercount] = clean
+    usercount += 1
 
 titleLabel = Label(root, text="WaschH15")
 usernameLabel = Label(Wasch, text="Benutzername: ")
 passwordLabel = Label(Wasch, text="Passwort: ")
 machineSelection = Label(Wasch, text="")
-usernameIN = Entry(Wasch, width=25)
+
+usernameIN = StringVar()
+usernameIN.set(usernames[0])
+usernameOptions = ttk.Combobox(Wasch, value=usernames)
+usernameOptions.current(0)
 passwordIN = Entry(Wasch, show="*", width=25)
 electricityOldBox = Entry(Wasch, width=25)
 electricityOldBox.insert(0,0)
 electricityNewBox = Entry(Wasch, width=25)
-login = Button(Wasch, text="WASCHEN!!!", command=myClick)
+login = Button(Wasch, text="Login", command=myClick)
 
 #defining the radio buttons
 def newSelection(): #machine choice buttons, changes the text and previous value
@@ -146,8 +160,8 @@ Table.pack()
 
 usernameLabel.grid(row=1, column=0)
 usernameLabel.config(font=('Arial', 18))
-usernameIN.grid(row=1, column=1)
-usernameIN.config(font=('Arial', 18))
+usernameOptions.grid(row=1, column=1)
+usernameOptions.config(font=('Arial', 18))
 
 passwordLabel.grid(row=2, column=0)
 passwordLabel.config(font=('Arial', 18))
