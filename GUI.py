@@ -18,8 +18,10 @@ root.geometry("1920x1080")
 Wasch = LabelFrame(root, padx=5, pady=5)
 Table = LabelFrame(root, padx=5, pady=5)
 
-logo = PhotoImage(file="C:/Users/Yulian/Desktop/WaschH15-master/hermann-logo-40.png")
-
+try:
+    logo = PhotoImage(file="C:/Users/Yulian/Desktop/WaschH15-master/hermann-logo-40.png")
+except:
+    pass
 
 #variable definitions
 sl = 0
