@@ -38,6 +38,7 @@ def logout(): #excecute button
     mycursor.execute(
         "SELECT strom_bist FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit 0,1" % (machineString.get(),))
     stromlehr = str(mycursor.fetchone())
+<<<<<<< HEAD
     mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameIN.get()))
     if mycursor.fetchone()[0]:
         mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(), usernameIN.get()))
@@ -62,6 +63,66 @@ def logout(): #excecute button
             else:  # ValueError
                 message.config(text="Bitte geben Sie einen größeren Wert ein")
             electricityInBox.delete(0, END)
+=======
+    if lastuser == usernameOptions.get() and stromlehr == "(None,)":
+        mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameOptions.get()))
+        if mycursor.fetchone()[0]:
+            mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(), usernameOptions.get()))
+            if mycursor.fetchone()[0]:
+                if int(electricityNewBox.get()) >= electricityOldValue:
+                    try:
+                        #checks the value inputted
+                        mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityNewBox.get()) +
+                                         " WHERE Waschmachine = '" + str(machineString.get()) + "'")
+                        mycursor.execute("UPDATE h15.abrechnung SET strom_bist = %s WHERE username = '%s' AND machine = '%s' ORDER BY strom_von DESC LIMIT 1" % (str(electricityNewBox.get()), usernameOptions.get(), machineString.get()))
+                        message.config(text="Alles Klar! Danke dir! :D")
+                        electricityNewBox.delete(0, END)
+                        electricityNewBox.insert(0, electricityNewBox.get())
+                        passwordIN.delete(0, END)
+                    except:
+                        message.config(text="Irgendein Error ist aufgetreten, sorry...")
+                else:  # ValueError
+                    message.config(text="Bitte geben Sie einen größeren Wert ein")
+                electricityNewBox.delete(0, END)
+            else:
+                message.config(text="Falsche Passwort")
+        else:
+            message.config(text="Falsche Benutzername")
+        mydb.commit()
+        tableUpdate(str(machineString.get()))
+    else:
+        mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameOptions.get()))
+        if mycursor.fetchone()[0]:
+            mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(), usernameOptions.get()))
+            if mycursor.fetchone()[0]:
+                if int(electricityNewBox.get()) >= electricityOldValue:
+                    if stromlehr == "(None,)":
+                        mycursor.execute("UPDATE h15.abrechnung SET strom_bist = %s WHERE username='%s' AND machine = '%s'" % (str(electricityNewBox.get()), lastuser, machineString.get()))
+                        mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityOldValue) +
+                                         " WHERE Waschmachine = '" + str(machineString.get()) + "'")
+                        mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
+                            str(usernameOptions.get()), str(machineString.get()), str(electricityNewBox.get()), "NULL"))
+                        message.config(text="Alles Klar! Danke dir! :D")
+                        electricityNewBox.delete(0, END)
+                        electricityNewBox.insert(0, electricityNewBox.get())
+                        passwordIN.delete(0, END)
+                    else:
+                        try:# checks the value inputted
+                            mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityOldValue) +
+                                             " WHERE Waschmachine = '" + str(machineString.get()) + "'")
+                            mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
+                                str(usernameOptions.get()), str(machineString.get()), str(electricityOldValue), "NULL"))
+                            message.config(text="Alles Klar! Danke dir! :D")
+                            electricityNewBox.delete(0, END)
+                            electricityNewBox.insert(0, electricityNewBox.get())
+                            passwordIN.delete(0, END)
+                        except:
+                            message.config(text="Irgendein Error ist aufgetreten, sorry...")
+                else:  # ValueError
+                    message.config(text="Bitte geben Sie einen größeren Wert ein")
+            else:
+                message.config(text="Falsche Passwort")
+>>>>>>> 6d5b5bb4af3487dc869b3afc0676901e49ff65cb
         else:
             message.config(text="Falsche Passwort")
     else:
@@ -121,15 +182,17 @@ for user in usernames:
     usernames[usercount] = clean
     usercount += 1
 
+
+
+
 titleLabel = Label(root, text="WaschH15")
 usernameLabel = Label(Wasch, text="Benutzername: ")
 passwordLabel = Label(Wasch, text="Passwort: ")
 machineSelection = Label(Wasch, text="")
 
-usernameIN = StringVar()
-usernameIN.set(usernames[0])
 usernameOptions = ttk.Combobox(Wasch, value=usernames)
 usernameOptions.current(0)
+usernameOptions.bind("<<ComboboxSelected>>")
 passwordIN = Entry(Wasch, show="*", width=25)
 electricityInBox = Entry(Wasch, width=25)
 logout = Button(Wasch, text="Eintragen", command=logout)
