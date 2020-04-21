@@ -38,20 +38,22 @@ def logout(): #excecute button
     mycursor.execute(
         "SELECT strom_bist FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit 0,1" % (machineString.get(),))
     stromlehr = str(mycursor.fetchone())
-    mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameIN.get()))
+    mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameOptions.get()))
     if mycursor.fetchone()[0]:
-        mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(), usernameIN.get()))
+        mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(), usernameOptions.get()))
+        print(passwordIN.get())
+        print(usernameOptions.get())
         if mycursor.fetchone()[0]:
             if int(electricityInBox.get()) >= electricityOldValue:
                 try:
                     #checks the value inputted
                     mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityInBox.get()) +
                                      " WHERE Waschmachine = '" + str(machineString.get()) + "'")
-                    if lastuser == usernameIN.get() and stromlehr == "(None,)":
-                        mycursor.execute("UPDATE h15.abrechnung SET strom_bist = %s WHERE username = '%s' AND machine = '%s' ORDER BY strom_von DESC LIMIT 1" % (str(electricityInBox.get()), usernameIN.get(), machineString.get()))
+                    if lastuser == usernameOptions.get() and stromlehr == "(None,)":
+                        mycursor.execute("UPDATE h15.abrechnung SET strom_bist = %s WHERE username = '%s' AND machine = '%s' ORDER BY strom_von DESC LIMIT 1" % (str(electricityInBox.get()), usernameOptions.get(), machineString.get()))
                     else:
                         mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
-                            str(usernameIN.get()), str(machineString.get()), str(electricityOldValue), "NULL"))
+                            str(usernameOptions.get()), str(machineString.get()), str(electricityOldValue), "NULL"))
                     message.config(text="Alles Klar! Danke dir! :D")
                     electricityInBox.delete(0, END)
                     electricityInBox.insert(0, electricityInBox.get())
@@ -126,8 +128,6 @@ usernameLabel = Label(Wasch, text="Benutzername: ")
 passwordLabel = Label(Wasch, text="Passwort: ")
 machineSelection = Label(Wasch, text="")
 
-usernameIN = StringVar()
-usernameIN.set(usernames[0])
 usernameOptions = ttk.Combobox(Wasch, value=usernames)
 usernameOptions.current(0)
 passwordIN = Entry(Wasch, show="*", width=25)
