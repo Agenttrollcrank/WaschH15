@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `h15`;
-USE `h15`;
 -- MySQL dump 10.13  Distrib 8.0.19, for Win64 (x86_64)
 --
 -- Host: localhost    Database: h15
@@ -22,13 +20,13 @@ USE `h15`;
 --
 
 DROP TABLE IF EXISTS `abrechnung`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `abrechnung` (
   `username` varchar(30) DEFAULT NULL,
-  `machine` varchar(30) DEFAULT NULL,
-  `Strom_von` int DEFAULT NULL,
-  `Strom_bist` int DEFAULT NULL,
-  FULLTEXT(machine)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `Stromverbrauch` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `abrechnung`
@@ -36,7 +34,7 @@ CREATE TABLE `abrechnung` (
 
 LOCK TABLES `abrechnung` WRITE;
 /*!40000 ALTER TABLE `abrechnung` DISABLE KEYS */;
-INSERT INTO `abrechnung` VALUES ('testus','Altbau',234, 235),('testus','Altbau',235, 237),('testus','Altbau',237, 239),('testus','Altbau',239, 245),('agfsd','Rechte_Maschine',3000, 3003);
+INSERT INTO `abrechnung` VALUES ('testus',234),('imatest',33333),('imasecond gtest',346765),('doppelnässchen',6666);
 /*!40000 ALTER TABLE `abrechnung` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -52,9 +50,10 @@ CREATE TABLE `benutzer` (
   `vorname` varchar(30) DEFAULT NULL,
   `nachname` varchar(30) DEFAULT NULL,
   `passwort` varchar(30) DEFAULT NULL,
-  `username` varchar(30) DEFAULT NULL,
-  `etage` varchar(30) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `Username` varchar(30) DEFAULT NULL,
+  `Etage` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `benutzer`
@@ -62,7 +61,7 @@ CREATE TABLE `benutzer` (
 
 LOCK TABLES `benutzer` WRITE;
 /*!40000 ALTER TABLE `benutzer` DISABLE KEYS */;
-INSERT INTO `benutzer` VALUES (3,'tst','nachn','lol','testus',NULL),(6,'ly','asfvv','sfg','agfsd','1'),(4,'eshat','funktioniert','lolol','imatest','33'),(7,'maxi','faxi','lolol','imasecond gtest','5'),(4,'mister','green','pw','doppelnässchen','33');
+INSERT INTO `benutzer` VALUES (1,'Max','Mustermann','1234',NULL,NULL),(2,'Peter','Ludolf','passwort',NULL,NULL),(1,'Max','Mustermann','1234',NULL,NULL),(2,'Peter','Ludolf','passwort',NULL,NULL),(3,'tst','nachn','lol','testus',NULL),(6,'ly','asfvv','sfg','agfsd','1'),(4,'eshat','funktioniert','lolol','imatest','33'),(7,'maxi','faxi','lolol','imasecond gtest','5'),(4,'mister','green','pw','doppelnässchen','33');
 /*!40000 ALTER TABLE `benutzer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -76,7 +75,8 @@ DROP TABLE IF EXISTS `strom`;
 CREATE TABLE `strom` (
   `Waschmachine` varchar(30) DEFAULT NULL,
   `Kwh` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `strom`
@@ -84,7 +84,7 @@ CREATE TABLE `strom` (
 
 LOCK TABLES `strom` WRITE;
 /*!40000 ALTER TABLE `strom` DISABLE KEYS */;
-INSERT INTO `strom` VALUES ('Altbau',245),('Linke_Maschine',20000),('Mittlere_Maschine',40000),('Rechte_Maschine',3003),('Trockner_Oben',50000),('Trockner_Unten',60000);
+INSERT INTO `strom` VALUES ('Altbau',NULL),('Linke_Maschine',NULL),('Rechte_Maschine',NULL),('Trockner_Oben',NULL),('Trockner_Unten',NULL);
 /*!40000 ALTER TABLE `strom` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
