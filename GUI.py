@@ -31,18 +31,16 @@ electricityOldValue = int
 #define the function for buttons
 def logout(): #excecute button
     #credential checkg
-    mycursor.execute("SELECT username FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit 0,1" % (machineString.get()))
+    mycursor.execute("SELECT username FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
     lastuser = str(mycursor.fetchone())
     lastuser = lastuser.replace("('","")
     lastuser = lastuser.replace("',)","")
     mycursor.execute(
-        "SELECT strom_bist FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit 0,1" % (machineString.get(),))
+        "SELECT Strom_bis FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit 0,1" % (machineString.get(),))
     stromlehr = str(mycursor.fetchone())
     mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameOptions.get()))
     if mycursor.fetchone()[0]:
         mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(), usernameOptions.get()))
-        print(passwordIN.get())
-        print(usernameOptions.get())
         if mycursor.fetchone()[0]:
             if int(electricityInBox.get()) >= electricityOldValue:
                 try:
@@ -50,7 +48,7 @@ def logout(): #excecute button
                     mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityInBox.get()) +
                                      " WHERE Waschmachine = '" + str(machineString.get()) + "'")
                     if lastuser == usernameOptions.get() and stromlehr == "(None,)":
-                        mycursor.execute("UPDATE h15.abrechnung SET strom_bist = %s WHERE username = '%s' AND machine = '%s' ORDER BY strom_von DESC LIMIT 1" % (str(electricityInBox.get()), usernameOptions.get(), machineString.get()))
+                        mycursor.execute("UPDATE h15.abrechnung SET Strom_bis = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (str(electricityInBox.get()), usernameOptions.get(), machineString.get()))
                     else:
                         mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
                             str(usernameOptions.get()), str(machineString.get()), str(electricityOldValue), "NULL"))
@@ -59,7 +57,6 @@ def logout(): #excecute button
                     electricityInBox.insert(0, electricityInBox.get())
                     passwordIN.delete(0, END)
                 except:
-                    print()
                     message.config(text="Irgendein Error ist aufgetreten, sorry...")
             else:  # ValueError
                 message.config(text="Bitte geben Sie einen größeren Wert ein")
@@ -72,6 +69,7 @@ def logout(): #excecute button
     tableUpdate(str(machineString.get()))
 
 def tableUpdate(mch):
+    message.config(text="")
     headings = ["Name","Strom Von","Strom Bis"]
     values = ["username","Strom_von","Strom_bis"]
     for row in range(5):
