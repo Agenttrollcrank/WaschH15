@@ -2,14 +2,14 @@ from tkinter import *
 import mysql.connector
 from tkinter import ttk
 
-#mysql connection
+#mysql connection all the login data
 mydb = mysql.connector.connect(
     user='Yulian',
     password='FreddyIstGeil',
     host='134.130.188.10',
     database='h15')
 
-mycursor = mydb.cursor(buffered=True)
+mycursor = mydb.cursor(buffered=True) #mysql cursor definition
 
 #define the windown
 root = Tk()
@@ -27,7 +27,6 @@ except:
 #variable definitions
 sl = 0
 electricityOldValue = int
-
 #define the function for buttons
 def logout(): #excecute button
     #credential checkg
@@ -35,29 +34,29 @@ def logout(): #excecute button
     lastuser = str(mycursor.fetchone())
     lastuser = lastuser.replace("('","")
     lastuser = lastuser.replace("',)","")
-    mycursor.execute(
-        "SELECT Strom_bis FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit 0,1" % (machineString.get(),))
-    stromlehr = str(mycursor.fetchone())
-    mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameOptions.get()))
-    if mycursor.fetchone()[0]:
-        mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(), usernameOptions.get()))
+    mycursor.execute("SELECT Strom_bis FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
+    electricityCurrent = str(mycursor.fetchone())
+    electricityCurrent = electricityCurrent.replace("(","")
+    electricityCurrent = electricityCurrent.replace(",)","")
+    mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameOptions.get())) #checks that the username is in the mysql table
+    if mycursor.fetchone()[0]: #my cursor returns 0 if there is such a username
+        mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(), usernameOptions.get())) #same thing for the password
         if mycursor.fetchone()[0]:
-            if int(electricityInBox.get()) >= electricityOldValue:
-                try:
-                    #checks the value inputted
-                    mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityInBox.get()) +
-                                     " WHERE Waschmachine = '" + str(machineString.get()) + "'")
-                    if lastuser == usernameOptions.get() and stromlehr == "(None,)":
+            if float(electricityInBox.get()) >= electricityOldValue:
+                #try:
+                    if lastuser == usernameOptions.get() and electricityCurrent == "None":
                         mycursor.execute("UPDATE h15.abrechnung SET Strom_bis = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (str(electricityInBox.get()), usernameOptions.get(), machineString.get()))
                     else:
-                        mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
-                            str(usernameOptions.get()), str(machineString.get()), str(electricityOldValue), "NULL"))
+                        if float(electricityCurrent) != float(electricityInBox.get()):
+                            mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % ("Arsch_loch", str(machineString.get()), str(electricityOldValue), electricityInBox.get()))
+                        mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (str(usernameOptions.get()), str(machineString.get()), electricityInBox.get(), "NULL"))
+                    mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityInBox.get()) + " WHERE Waschmachine = '" + str(machineString.get()) + "'")
                     message.config(text="Alles Klar! Danke dir! :D")
                     electricityInBox.delete(0, END)
                     electricityInBox.insert(0, electricityInBox.get())
                     passwordIN.delete(0, END)
-                except:
-                    message.config(text="Irgendein Error ist aufgetreten, sorry...")
+                #except:
+                    #message.config(text="Irgendein Error ist aufgetreten, sorry...")
             else:  # ValueError
                 message.config(text="Bitte geben Sie einen größeren Wert ein")
             electricityInBox.delete(0, END)
@@ -69,7 +68,6 @@ def logout(): #excecute button
     tableUpdate(str(machineString.get()))
 
 def tableUpdate(mch):
-    message.config(text="")
     headings = ["Name","Strom Von","Strom Bis"]
     values = ["username","Strom_von","Strom_bis"]
     for row in range(5):
@@ -91,6 +89,7 @@ def tableUpdate(mch):
 #username combobox
 mycursor.execute("SELECT username FROM h15.benutzer")
 usernames = mycursor.fetchall()
+
 usercount = 0
 for user in usernames:
     clean = str(user).replace("('","")
@@ -137,7 +136,7 @@ def newSelection(): #machine choice buttons, changes the text and previous value
     electricityOldValue = str(mycursor.fetchone())
     electricityOldValue = electricityOldValue.replace("(", "")
     electricityOldValue = electricityOldValue.replace(",)", "")
-    electricityOldValue = int(electricityOldValue)
+    electricityOldValue = float(electricityOldValue)
     electricityInBox.delete(0, END)
     electricityInBox.insert(0, electricityOldValue)
 MACHINES = [

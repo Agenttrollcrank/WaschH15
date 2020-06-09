@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.19, for Win64 (x86_64)
 --
--- Host: localhost    Database: h15
+-- Host: 134.130.188.10    Database: h15
 -- ------------------------------------------------------
 -- Server version	8.0.19
 
@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `abrechnung`;
 CREATE TABLE `abrechnung` (
   `username` varchar(30) DEFAULT NULL,
   `Stromverbrauch` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -52,7 +52,7 @@ CREATE TABLE `benutzer` (
   `passwort` varchar(30) DEFAULT NULL,
   `Username` varchar(30) DEFAULT NULL,
   `Etage` varchar(30) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -75,7 +75,7 @@ DROP TABLE IF EXISTS `strom`;
 CREATE TABLE `strom` (
   `Waschmachine` varchar(30) DEFAULT NULL,
   `Kwh` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
