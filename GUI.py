@@ -72,8 +72,8 @@ def logout(): #excecute button
     tableUpdate(str(machineString.get()))
 
 def tableUpdate(mch):
-    headings = ["Name","Strom Von","Strom Bist"]
-    values = ["username","strom_von","strom_bist"]
+    headings = ["Name","Strom Von","Strom Bis"]
+    values = ["username","Strom_von","Strom_bis"]
     for row in range(5):
         if row == 0:
             for column in range(3):
@@ -81,32 +81,9 @@ def tableUpdate(mch):
                 label.grid(row=row,column=(column),sticky="nsew",padx=1,pady=1)
                 label.config(font=('Arial', 18, "bold"))
                 Table.grid_columnconfigure((column),weight=1)
-        elif row == 1:
-            for column in range(3):
-                if column == 2:
-                    mycursor.execute("SELECT %s FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit %s,1" % (str(values[column]), mch, str(row-1)))
-                    if str(mycursor.fetchone()) == "(None,)":
-                        label = Label(Table, text=" ", bg="white", fg="black", padx=30, pady=3)
-                    else:
-                        mycursor.execute(
-                            "SELECT %s FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit %s,1" % (
-                            str(values[column]), mch, str(row - 1)))
-                        label = Label(Table, text=mycursor.fetchone(), bg="white", fg="black", padx=30, pady=3)
-                    label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
-                    label.config(font=('Arial', 18))
-                    Table.grid_columnconfigure(column, weight=1)
-                else:
-                    for column in range(3):
-                        mycursor.execute(
-                            "SELECT %s FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit %s,1" % (
-                            str(values[column]), mch, str(row - 1)))
-                        label = Label(Table, text=mycursor.fetchone(), bg="white", fg="black", padx=30, pady=3)
-                        label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
-                        label.config(font=('Arial', 18))
-                        Table.grid_columnconfigure(column, weight=1)
         else:
             for column in range(3):
-                mycursor.execute("SELECT %s FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY strom_von DESC limit %s,1" % (str(values[column]), mch, str(row-1)))
+                mycursor.execute("SELECT %s FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit %s,1" % (str(values[column]), mch, str(row-1)))
                 label = Label(Table, text=mycursor.fetchone(), bg="white", fg="black", padx=30, pady=3)
                 label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
                 label.config(font=('Arial', 18))
