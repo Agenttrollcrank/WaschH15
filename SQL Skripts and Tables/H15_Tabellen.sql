@@ -1,6 +1,8 @@
+CREATE DATABASE  IF NOT EXISTS `h15`;
+USE `h15`;
 -- MySQL dump 10.13  Distrib 8.0.19, for Win64 (x86_64)
 --
--- Host: 134.130.188.10    Database: h15
+-- Host: localhost    Database: h15
 -- ------------------------------------------------------
 -- Server version	8.0.19
 
@@ -23,18 +25,20 @@ DROP TABLE IF EXISTS `abrechnung`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `abrechnung` (
-  `username` varchar(30) DEFAULT NULL,
-  `Stromverbrauch` int DEFAULT NULL
+    `username` VARCHAR(30) DEFAULT NULL,
+    `machine` VARCHAR(30) DEFAULT NULL,
+    `Strom_von` INT DEFAULT NULL,
+    `Strom_bist` INT DEFAULT NULL,
+    FULLTEXT ( machine )
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
-
 --
 -- Dumping data for table `abrechnung`
 --
 
 LOCK TABLES `abrechnung` WRITE;
 /*!40000 ALTER TABLE `abrechnung` DISABLE KEYS */;
-INSERT INTO `abrechnung` VALUES ('testus',234),('imatest',33333),('imasecond gtest',346765),('doppelnässchen',6666);
+INSERT INTO `abrechnung` VALUES ('testus','Linke_maschine',234, 235),('testus','Altbau',235, 237),('testus','Mittlere_Maschine',237, 239),('testus','Rechte_Maschine',239, 245),('agfsd','Trockner_Oben',3000, 3003);
 /*!40000 ALTER TABLE `abrechnung` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -46,10 +50,10 @@ DROP TABLE IF EXISTS `benutzer`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `benutzer` (
-  `id` int DEFAULT NULL,
-  `vorname` varchar(30) DEFAULT NULL,
-  `nachname` varchar(30) DEFAULT NULL,
-  `passwort` varchar(30) DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `Vorname` varchar(30) DEFAULT NULL,
+  `Nachname` varchar(30) DEFAULT NULL,
+  `Passwort` varchar(70) DEFAULT NULL,
   `Username` varchar(30) DEFAULT NULL,
   `Etage` varchar(30) DEFAULT NULL
 );
@@ -61,7 +65,8 @@ CREATE TABLE `benutzer` (
 
 LOCK TABLES `benutzer` WRITE;
 /*!40000 ALTER TABLE `benutzer` DISABLE KEYS */;
-INSERT INTO `benutzer` VALUES (1,'Max','Mustermann','1234',NULL,NULL),(2,'Peter','Ludolf','passwort',NULL,NULL),(1,'Max','Mustermann','1234',NULL,NULL),(2,'Peter','Ludolf','passwort',NULL,NULL),(3,'tst','nachn','lol','testus',NULL),(6,'ly','asfvv','sfg','agfsd','1'),(4,'eshat','funktioniert','lolol','imatest','33'),(7,'maxi','faxi','lolol','imasecond gtest','5'),(4,'mister','green','pw','doppelnässchen','33');
+INSERT INTO `benutzer` (Vorname,Nachname,Passwort,Username,Etage)
+VALUES ('ly','asfvv','sfg','agfsd','1'),('eshat','funktioniert','lolol','imatest','33'),('maxi','faxi','lolol','imasecond gtest','5'),('mister','green','pw','doppelnässchen','33');
 /*!40000 ALTER TABLE `benutzer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -74,7 +79,7 @@ DROP TABLE IF EXISTS `strom`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `strom` (
   `Waschmachine` varchar(30) DEFAULT NULL,
-  `Kwh` int DEFAULT NULL
+  `Kwh` float DEFAULT NULL
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -84,7 +89,7 @@ CREATE TABLE `strom` (
 
 LOCK TABLES `strom` WRITE;
 /*!40000 ALTER TABLE `strom` DISABLE KEYS */;
-INSERT INTO `strom` VALUES ('Altbau',NULL),('Linke_Maschine',NULL),('Rechte_Maschine',NULL),('Trockner_Oben',NULL),('Trockner_Unten',NULL);
+INSERT INTO `strom` VALUES ('Altbau','100.0'),('Linke_Maschine','100'),('Mittlere_Maschine','100'),('Rechte_Maschine','100'),('Trockner_Oben','100'),('Trockner_Unten','100'); 
 /*!40000 ALTER TABLE `strom` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

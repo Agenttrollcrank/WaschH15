@@ -1,6 +1,7 @@
 from tkinter import *
 import mysql.connector
 from tkinter import ttk
+import bcrypt
 
 #mysql connection all the login data
 mydb = mysql.connector.connect(
@@ -34,18 +35,21 @@ def logout(): #excecute button
     lastuser = str(mycursor.fetchone())
     lastuser = lastuser.replace("('","")
     lastuser = lastuser.replace("',)","")
-    mycursor.execute("SELECT Strom_bis FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
+    mycursor.execute("SELECT Strom_bist FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
     electricityCurrent = str(mycursor.fetchone())
     electricityCurrent = electricityCurrent.replace("(","")
     electricityCurrent = electricityCurrent.replace(",)","")
     mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE username='%s'" % (usernameOptions.get())) #checks that the username is in the mysql table
     if mycursor.fetchone()[0]: #my cursor returns 0 if there is such a username
-        mycursor.execute("SELECT COUNT(1) FROM h15.benutzer WHERE passwort='%s' AND username='%s'" % (passwordIN.get(), usernameOptions.get())) #same thing for the password
-        if mycursor.fetchone()[0]:
+        mycursor.execute("SELECT Passwort FROM h15.benutzer WHERE username='%s'" % (usernameOptions.get())) #same thing for the password
+        hashed = str(mycursor.fetchone())
+        hashed = hashed.replace("('", "")
+        hashed = hashed.replace("',)", "")
+        if bcrypt.checkpw((passwordIN.get()).encode("utf-8"), hashed.encode("utf-8")):
             if float(electricityInBox.get()) >= electricityOldValue:
-                #try:
+                try:
                     if lastuser == usernameOptions.get() and electricityCurrent == "None":
-                        mycursor.execute("UPDATE h15.abrechnung SET Strom_bis = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (str(electricityInBox.get()), usernameOptions.get(), machineString.get()))
+                        mycursor.execute("UPDATE h15.abrechnung SET Strom_bist = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (str(electricityInBox.get()), usernameOptions.get(), machineString.get()))
                     else:
                         if float(electricityCurrent) != float(electricityInBox.get()):
                             mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % ("Arsch_loch", str(machineString.get()), str(electricityOldValue), electricityInBox.get()))
@@ -55,8 +59,8 @@ def logout(): #excecute button
                     electricityInBox.delete(0, END)
                     electricityInBox.insert(0, electricityInBox.get())
                     passwordIN.delete(0, END)
-                #except:
-                    #message.config(text="Irgendein Error ist aufgetreten, sorry...")
+                except:
+                    message.config(text="Irgendein Error ist aufgetreten, sorry... ")
             else:  # ValueError
                 message.config(text="Bitte geben Sie einen größeren Wert ein")
             electricityInBox.delete(0, END)
@@ -68,8 +72,8 @@ def logout(): #excecute button
     tableUpdate(str(machineString.get()))
 
 def tableUpdate(mch):
-    headings = ["Name","Strom Von","Strom Bis"]
-    values = ["username","Strom_von","Strom_bis"]
+    headings = ["Name","Strom Von","Strom Bist"]
+    values = ["username","Strom_von","Strom_bist"]
     for row in range(5):
         if row == 0:
             for column in range(3):
