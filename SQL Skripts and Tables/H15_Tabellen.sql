@@ -27,8 +27,8 @@ DROP TABLE IF EXISTS `abrechnung`;
 CREATE TABLE `abrechnung` (
     `username` VARCHAR(30) DEFAULT NULL,
     `machine` VARCHAR(30) DEFAULT NULL,
-    `Strom_von` INT DEFAULT NULL,
-    `Strom_bist` INT DEFAULT NULL,
+    `Strom_von` FLOAT DEFAULT NULL,
+    `Strom_bist` FLOAT DEFAULT NULL,
     FULLTEXT ( machine )
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -89,7 +89,7 @@ CREATE TABLE `strom` (
 
 LOCK TABLES `strom` WRITE;
 /*!40000 ALTER TABLE `strom` DISABLE KEYS */;
-INSERT INTO `strom` VALUES ('Altbau','100.0'),('Linke_Maschine','100'),('Mittlere_Maschine','100'),('Rechte_Maschine','100'),('Trockner_Oben','100'),('Trockner_Unten','100'); 
+INSERT INTO `strom` VALUES ('Altbau','237.0'),('Linke_Maschine','235.0'),('Mittlere_Maschine','239.0'),('Rechte_Maschine','245.0'),('Trockner_Oben','3003'),('Trockner_Unten','100'); 
 /*!40000 ALTER TABLE `strom` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

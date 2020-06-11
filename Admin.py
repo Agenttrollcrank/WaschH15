@@ -90,7 +90,6 @@ for i, entryType in enumerate(LabelsReset):
     entryBox.config(font=('Arial', 18))
     EntryBoxesPassword.append(entryBox)
 
-
 registerButton = Button(RegisterFrame, text="Eintragen", command=Register)
 registerButton.grid(row=6, column=1)
 registerButton = Button(PasswordResetFrame, text="Reset", command=ResetPassword)
@@ -98,8 +97,5 @@ registerButton.grid(row=6, column=1)
 message = Label(PowerWindow, text="")
 message.config(font=('Arial', 18))
 message.pack()
-
-
-
 
 PowerWindow.mainloop()
