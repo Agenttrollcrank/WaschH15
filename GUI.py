@@ -26,10 +26,52 @@ try:
 except:
     pass
 # variable definitions
-
 electricityOldValue = int
+
+# confirmation window
+
+def confirm(oldElectricity,newElectricity):
+    top = Toplevel()
+    top.title("Bestätigun")
+    electricityOldValueLabel = Label(top, text="Alte Strom Stand: %f" % (float(oldElectricity))).pack()
+    electricityNewValueLabel = Label(top, text="Neue Strom Stand: %f" % (float(newElectricity))).pack()
+    confirmButton = Button(top, text="Bestätigen", command=lambda:[sendnewrecord(), top.destroy()]).pack()
+    abortButton = Button(top, text="Exit", command=top.destroy).pack()
+
+def sendnewrecord():
+    global lastuser
+    global electricityCurrent
+    try:
+        if lastuser == usernameOptions.get() and electricityCurrent == "None":
+            mycursor.execute(
+                "UPDATE h15.abrechnung SET Strom_bist = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (
+                str(electricityInBox.get()), usernameOptions.get(), machineString.get()))
+        else:
+            if float(electricityCurrent) != float(electricityInBox.get()):
+                mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
+                "Kameradenschwein", str(machineString.get()), str(electricityOldValue), electricityInBox.get()))
+            mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
+            str(usernameOptions.get()), str(machineString.get()), electricityInBox.get(), "NULL"))
+        mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityInBox.get()) + " WHERE Waschmachine = '" + str(
+            machineString.get()) + "'")
+        message.config(text="Alles Klar! Danke dir! :D")
+        electricityInBox.delete(0, END)
+        electricityInBox.insert(0, electricityInBox.get())
+        passwordIN.delete(0, END)
+        electricityInBox.delete(0, END)
+        mydb.commit()
+        TableUpdate(str(machineString.get()))
+    except:
+       message.config(text="Irgendein Error ist aufgetreten, sorry... ")
+
+
+
+
 # define the function for buttons
+
 def logout(): # excecute button
+    global lastuser
+    global electricityCurrent
     # credential checkg
     mycursor.execute("SELECT username FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
     lastuser = str(mycursor.fetchone())
@@ -48,23 +90,9 @@ def logout(): # excecute button
         if bcrypt.checkpw((passwordIN.get()).encode("utf-8"), hashed.encode("utf-8")):
             try:
                 if float(electricityInBox.get()) >= electricityOldValue:
-                    try:
-                        if lastuser == usernameOptions.get() and electricityCurrent == "None":
-                            mycursor.execute("UPDATE h15.abrechnung SET Strom_bist = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (str(electricityInBox.get()), usernameOptions.get(), machineString.get()))
-                        else:
-                            if float(electricityCurrent) != float(electricityInBox.get()):
-                                mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % ("Kameradenschwein", str(machineString.get()), str(electricityOldValue), electricityInBox.get()))
-                            mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (str(usernameOptions.get()), str(machineString.get()), electricityInBox.get(), "NULL"))
-                        mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityInBox.get()) + " WHERE Waschmachine = '" + str(machineString.get()) + "'")
-                        message.config(text="Alles Klar! Danke dir! :D")
-                        electricityInBox.delete(0, END)
-                        electricityInBox.insert(0, electricityInBox.get())
-                        passwordIN.delete(0, END)
-                    except:
-                        message.config(text="Irgendein Error ist aufgetreten, sorry... ")
+                   confirm(electricityOldValue,electricityInBox.get())
                 else:  # ValueError
                     message.config(text="Bitte geben Sie einen größeren Wert ein")
-                electricityInBox.delete(0, END)
             except ValueError:
                 message.config(text="Bitte eine Zahl Eingeben")
             except:
@@ -74,9 +102,9 @@ def logout(): # excecute button
     else:
         message.config(text="Falsche Benutzername")
     mydb.commit()
-    tableUpdate(str(machineString.get()))
+    TableUpdate(str(machineString.get()))
 
-def tableUpdate(mch):
+def TableUpdate(mch):
     headings = ["Name","Strom Von","Strom Bist"]
     values = ["username","Strom_von","Strom_bist"]
     for row in range(5):
@@ -95,27 +123,27 @@ def tableUpdate(mch):
                 Table.grid_columnconfigure(column, weight=1)
 
 #defining the radio buttons
-def newSelection(): #machine choice buttons, changes the text and previous value
+def NewSelection(): #machine choice buttons, changes the text and previous value
     global electricityOldValue
     machineSelection.config(text=machineString.get())
     if machineString.get() == "Altbau":
         sl = 0
-        tableUpdate("Altbau")
+        TableUpdate("Altbau")
     elif machineString.get() == "Linke_Maschine":
         sl = 1
-        tableUpdate("Linke_Maschine")
+        TableUpdate("Linke_Maschine")
     elif machineString.get() == "Mittlere_Maschine":
         sl = 2
-        tableUpdate("Mittlere_Maschine")
+        TableUpdate("Mittlere_Maschine")
     elif machineString.get() == "Rechte_Maschine":
         sl = 3
-        tableUpdate("Rechte_Maschine")
+        TableUpdate("Rechte_Maschine")
     elif machineString.get() == "Trockner_Oben":
         sl = 4
-        tableUpdate("Trockner_Oben")
+        TableUpdate("Trockner_Oben")
     elif machineString.get() == "Trockner_Unten":
         sl = 5
-        tableUpdate("Trockner_Unten")
+        TableUpdate("Trockner_Unten")
     else:
         exit(1)
     mycursor.execute("SELECT Kwh FROM h15.strom LIMIT " + str(sl) +",1")
@@ -161,7 +189,7 @@ electricityInLabel = Label(Wasch, text="Strom Stand: ")
 machineString = StringVar()
 line = 3
 for text, machine in MACHINES:
-    button = Radiobutton(Wasch, text=text, variable=machineString, value=machine, tristatevalue=0, command=lambda: newSelection())
+    button = Radiobutton(Wasch, text=text, variable=machineString, value=machine, tristatevalue=0, command=lambda: NewSelection())
     button.grid(row=line, column=1, sticky="w")
     button.config(font=('Arial', 18))
     line += 1
