@@ -27,18 +27,18 @@ except:
     pass
 # variable definitions
 electricityOldValue = int
-
+electricityPosb = [0]
 # confirmation window
 
-def confirm(oldElectricity,newElectricity):
+def Confirm(oldElectricity,newElectricity):
     top = Toplevel()
     top.title("Bestätigun")
-    electricityOldValueLabel = Label(top, text="Alte Strom Stand: %f" % (float(oldElectricity))).pack()
-    electricityNewValueLabel = Label(top, text="Neue Strom Stand: %f" % (float(newElectricity))).pack()
-    confirmButton = Button(top, text="Bestätigen", command=lambda:[sendnewrecord(), top.destroy()]).pack()
+    electricityOldValueLabel = Label(top, text="Alte Strom Stand: %s" % (str(oldElectricity))).pack()
+    electricityNewValueLabel = Label(top, text="Neue Strom Stand: %s" % (str(newElectricity))).pack()
+    confirmButton = Button(top, text="Bestätigen", command=lambda: [SendNewRecord(), top.destroy()]).pack()
     abortButton = Button(top, text="Exit", command=top.destroy).pack()
 
-def sendnewrecord():
+def SendNewRecord():
     global lastuser
     global electricityCurrent
     try:
@@ -64,12 +64,9 @@ def sendnewrecord():
     except:
        message.config(text="Irgendein Error ist aufgetreten, sorry... ")
 
-
-
-
 # define the function for buttons
 
-def logout(): # excecute button
+def Logout(): # excecute button
     global lastuser
     global electricityCurrent
     # credential checkg
@@ -90,7 +87,7 @@ def logout(): # excecute button
         if bcrypt.checkpw((passwordIN.get()).encode("utf-8"), hashed.encode("utf-8")):
             try:
                 if float(electricityInBox.get()) >= electricityOldValue:
-                   confirm(electricityOldValue,electricityInBox.get())
+                    Confirm(electricityOldValue,electricityInBox.get())
                 else:  # ValueError
                     message.config(text="Bitte geben Sie einen größeren Wert ein")
             except ValueError:
@@ -101,8 +98,6 @@ def logout(): # excecute button
             message.config(text="Falsche Passwort")
     else:
         message.config(text="Falsche Benutzername")
-    mydb.commit()
-    TableUpdate(str(machineString.get()))
 
 def TableUpdate(mch):
     headings = ["Name","Strom Von","Strom Bist"]
@@ -124,7 +119,9 @@ def TableUpdate(mch):
 
 #defining the radio buttons
 def NewSelection(): #machine choice buttons, changes the text and previous value
+    global electricityPosb
     global electricityOldValue
+    global electricityInBox
     machineSelection.config(text=machineString.get())
     if machineString.get() == "Altbau":
         sl = 0
@@ -153,7 +150,11 @@ def NewSelection(): #machine choice buttons, changes the text and previous value
     electricityOldValue = float(electricityOldValue)
     electricityInBox.delete(0, END)
     electricityInBox.insert(0, electricityOldValue)
-
+    electricityPosb = []
+    for pos in frange_positve(str(electricityOldValue).split(".")[1], int(str(electricityOldValue).split(".")[1]) + 15, 1):
+        pos = pos / 10
+        electricityPosb.append(round(electricityOldValue + pos, 1))
+    electricityInBox.config(value=electricityPosb)
 MACHINES = [
     ("Altbau", "Altbau"),
     ("Linke Maschine", "Linke_Maschine"),
@@ -166,19 +167,35 @@ MACHINES = [
 # username combobox
 mycursor.execute("SELECT username FROM h15.benutzer")
 usernames = mycursor.fetchall()
-usercount = 0
+userCount = 0
 
 for user in usernames:
     clean = str(user).replace("('","")
     clean = clean.replace("',)","")
-    usernames[usercount] = clean
-    usercount += 1
+    usernames[userCount] = clean
+    userCount += 1
+
+def frange_positve(start, stop=None, step=None):
+    if stop == None:
+        stop = start + 0.0
+        start = 0.0
+    if step == None:
+        step = 1.0
+    count = 0
+    while True:
+        temp = float(int(start) + int(count) * int(step))
+        if temp >= stop:
+            break
+        yield temp
+        count += 1
+
 
 usernameOptions = ttk.Combobox(Wasch, value=usernames)
 usernameOptions.current(0)
 passwordIN = Entry(Wasch, show="*", width=25)
-electricityInBox = Entry(Wasch, width=25)
-logout = Button(Wasch, text="Eintragen", command=logout)
+electricityInBox = ttk.Combobox(Wasch, value=electricityPosb)
+electricityInBox.current(0)
+logout = Button(Wasch, text="Eintragen", command=Logout)
 titleLabel = Label(root, text="WaschH15")
 usernameLabel = Label(Wasch, text="Benutzername: ")
 passwordLabel = Label(Wasch, text="Passwort: ")
