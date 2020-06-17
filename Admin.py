@@ -14,6 +14,8 @@ PowerWindow = Tk()  # define the windown
 PowerWindow.title("Register")
 PowerWindow.geometry("500x500")
 
+etagen = ["1","2","3","4","Altbau","Hinterlieger","Ehepaar_Neubau","Ehepaar_Hinterlieger","Einzel_Wohnung"]
+
 Notebook = ttk.Notebook(PowerWindow)
 Notebook.pack(pady=15)
 
@@ -34,12 +36,25 @@ def Register():
     hashed = bcrypt.hashpw(entrylistRegister[2].encode("utf-8"), bcrypt.gensalt())
     hashed = str(hashed).replace("b'", "")
     hashed = str(hashed).replace("'", "")
-    mycursor.execute("INSERT INTO benutzer (Vorname,Nachname,Passwort,Username,Etage) VALUES ('%s', '%s', '%s', '%s', '%s')"
-                     %(entrylistRegister[0], entrylistRegister[1], hashed, entrylistRegister[3], entrylistRegister[4]))
-    mydb.commit()
-    message.config(text="Benutzer wurde erfolgreich \n zum System hinzugefügt")
-    for entries in EntryBoxesRegister:
-        entries.delete(0, END)
+    if entrylistRegister[2] == entrylistRegister[3] and entrylistRegister[2] != "":
+        if any(entrylistRegister[5] == etage for etage in etagen):
+            try:
+                mycursor.execute("INSERT INTO benutzer (Vorname,Nachname,Passwort,Username,Etage) VALUES ('%s', '%s', '%s', '%s', '%s')"
+                                 %(entrylistRegister[0], entrylistRegister[1], hashed, entrylistRegister[4], entrylistRegister[5]))
+                mydb.commit()
+                message.config(text="Benutzer wurde erfolgreich \n zum System hinzugefügt")
+                for entries in EntryBoxesRegister:
+                    entries.delete(0, END)
+            except:
+                message.config(text="Falsche datan eingegeben")
+        else:
+            message.config(text="Bitte eine akzeptabel Etage eingeben. Versuche es nochmal")
+            EntryBoxesRegister[5].delete(0, END)
+
+    else:
+        message.config(text="Passwort sind nicht gleich. Versuche es nochmal")
+        EntryBoxesRegister[2].delete(0, END)
+        EntryBoxesRegister[3].delete(0, END)
 
 
 def ResetPassword():
@@ -49,23 +64,26 @@ def ResetPassword():
     hashed = bcrypt.hashpw(entrylistPassword[3].encode("utf-8"), bcrypt.gensalt())
     hashed = str(hashed).replace("b'", "")
     hashed = str(hashed).replace("'", "")
-    print("UPDATE benutzer SET Passwort = '%s' WHERE Vorname = '%s' AND Nachname = '%s' AND Username = '%s' AND Etage = '%s'"
-                     % (hashed, entrylistPassword[0], entrylistPassword[1], entrylistPassword[4], entrylistPassword[5]))
-    mycursor.execute("UPDATE benutzer SET Passwort = '%s' WHERE Vorname = '%s' AND Nachname = '%s' AND Username = '%s' AND Etage = '%s'"
-                     % (hashed, entrylistPassword[0], entrylistPassword[1], entrylistPassword[4], entrylistPassword[5]))
+    if entrylistPassword[4] == entrylistPassword[3] and entrylistPassword[4] != "":
+        try:
+            mycursor.execute("UPDATE benutzer SET Passwort = '%s' WHERE Vorname = '%s' AND Nachname = '%s' AND Username = '%s' AND Etage = '%s'" % (hashed, entrylistPassword[0], entrylistPassword[1], entrylistPassword[4], entrylistPassword[5]))
+        except:
+            message.config(text="Falsche datan eingegeben")
     mydb.commit()
     message.config(text="Passwort wurde Aktualisiert")
     for entries in EntryBoxesPassword:
         entries.delete(0, END)
 
 # things played on the screen
-LabelsRegister = ["Vorname", "Nachname", "Passwort", "Username", "Etage"]
+LabelsRegister = ["Vorname", "Nachname", "Passwort", "Passwort Wiederholen","Username", "Etage"]
 EntryBoxesRegister = []
 EntryBoxesPassword = []
 for i, entryType in enumerate(LabelsRegister):
     label = Label(RegisterFrame, text=entryType + ": ")
-    if entryType == "Passwort":
+    if entryType == "Passwort" or entryType == "Passwort Wiederholen":
         entryBox = Entry(RegisterFrame, show="*", width=25)
+    if entryType == "Etage":
+        entryBox = ttk.Combobox(RegisterFrame, value=etagen)
     else:
         entryBox = Entry(RegisterFrame, width=25)
     label.grid(row=i, column=0)
@@ -74,7 +92,7 @@ for i, entryType in enumerate(LabelsRegister):
     entryBox.config(font=('Arial', 18))
     EntryBoxesRegister.append(entryBox)
 
-LabelsReset = ["Vorname", "Nachname", "Alte_Passwort", "Neue_Password", "Username", "Etage"]
+LabelsReset = ["Vorname", "Nachname", "Alte Passwort", "Neues Password","Neues Password Wiederholen" "Username", "Etage"]
 for i, entryType in enumerate(LabelsReset):
     label = Label(PasswordResetFrame, text=entryType + ": ")
     if entryType == "Passwort":

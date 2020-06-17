@@ -2,7 +2,7 @@ from tkinter import *
 import mysql.connector
 from tkinter import ttk
 import bcrypt
-
+import time
 
 # mysql connection all the login data
 mydb = mysql.connector.connect(
@@ -38,7 +38,7 @@ WaschGUI.pack(fill="both", expand=1)
 RegisterFrame.pack(fill="both", expand=1)
 
 Notebook.add(WaschGUI, text="Waschen")
-Notebook.add(RegisterFrame, text="Register")
+Notebook.add(RegisterFrame, text="registrieren")
 
 
 Table = LabelFrame(root, padx=5, pady=5)
@@ -46,15 +46,23 @@ Table = LabelFrame(root, padx=5, pady=5)
 # variable definitions
 electricityOldValue = int
 electricityPosb = [0]
+etagen = ["1","2","3","4","Altbau","Hinterlieger","Ehepaar_Neubau","Ehepaar_Hinterlieger","Einzel_Wohnung"]
+
 # confirmation window
 
 def Confirm(oldElectricity,newElectricity):
     top = Toplevel()
     top.title("Bestätigun")
-    electricityOldValueLabel = Label(top, text="Alte Strom Stand: %s" % (str(oldElectricity))).pack()
-    electricityNewValueLabel = Label(top, text="Neue Strom Stand: %s" % (str(newElectricity))).pack()
-    confirmButton = Button(top, text="Bestätigen", command=lambda: [SendNewRecord(), top.destroy()]).pack()
-    abortButton = Button(top, text="Exit", command=top.destroy).pack()
+    Label(top, text="Alte Strom Stand: %s" % (str(oldElectricity))).pack()
+    Label(top, text="Neue Strom Stand: %s" % (str(newElectricity))).pack()
+    Button(top, text="Bestätigen", command=lambda: [SendNewRecord(), top.destroy()]).pack()
+    Button(top, text="Exit", command=top.destroy).pack()
+    top.update_idletasks()
+    width = top.winfo_width()
+    height = top.winfo_height()
+    x = (top.winfo_screenwidth() // 2) - (width // 2)
+    y = (top.winfo_screenheight() // 2) - (height // 2)
+    top.geometry('{}x{}+{}+{}'.format(width, height, x, y))
 
 def SendNewRecord():
     global lastuser
@@ -77,16 +85,18 @@ def SendNewRecord():
             str(usernameOptions.get()), str(machineString.get()), electricityInBox.get(), "NULL"))
         mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityInBox.get()) + " WHERE Waschmachine = '" + str(
             machineString.get()) + "'")
-        message.config(text="")
+        message.config(text="Alles Klar, Danke Dir :D")
         electricityInBox.delete(0, END)
         electricityInBox.insert(0, electricityInBox.get())
         passwordIN.delete(0, END)
         electricityInBox.delete(0, END)
-        NewSelection()
         mydb.commit()
         TableUpdate(str(machineString.get()))
     except:
        message.config(text="Irgendein Error ist aufgetreten, sorry... ")
+    finally:
+        root.update_idletasks()
+        root.after(4000, message.config(text=""))
 
 # define the function for buttons
 
@@ -126,7 +136,7 @@ def Logout(): # excecute button
 def TableUpdate(mch):
     headings = ["Name","Strom Von","Strom Bis"]
     values = ["username","Strom_von","Strom_bis"]
-    for row in range(5):
+    for row in range(6):
         if row == 0:
             for column in range(3):
                 label = Label(Table, text=headings[column], bg="white", fg="black", padx=30, pady=3)
@@ -140,6 +150,7 @@ def TableUpdate(mch):
                 label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
                 label.config(font=('Arial', 18))
                 Table.grid_columnconfigure(column, weight=1)
+
 
 #defining the radio buttons
 def NewSelection(): #machine choice buttons, changes the text and previous value
@@ -179,6 +190,7 @@ def NewSelection(): #machine choice buttons, changes the text and previous value
         pos = pos / 10
         electricityPosb.append(round(electricityOldValue + pos, 1))
     electricityInBox.config(value=electricityPosb)
+
 MACHINES = [
     ("Altbau", "Altbau"),
     ("Linke Maschine", "Linke_Maschine"),
@@ -230,16 +242,25 @@ def Register():
     hashed = str(hashed).replace("b'", "")
     hashed = str(hashed).replace("'", "")
     if entrylistRegister[2] == entrylistRegister[3] and entrylistRegister[2] != "":
-        mycursor.execute("INSERT INTO benutzer (Vorname,Nachname,Passwort,Username,Etage) VALUES ('%s', '%s', '%s', '%s', '%s')"
-                         %(entrylistRegister[0], entrylistRegister[1], hashed, entrylistRegister[4], entrylistRegister[5]))
-        mydb.commit()
-        message.config(text="Benutzer wurde erfolgreich \n zum System hinzugefügt")
-        for entries in EntryBoxesRegister:
-            entries.delete(0, END)
+        if any(entrylistRegister[5] == etage for etage in etagen):
+            mycursor.execute("INSERT INTO benutzer (Vorname,Nachname,Passwort,Username,Etage) VALUES ('%s', '%s', '%s', '%s', '%s')"
+                             %(entrylistRegister[0], entrylistRegister[1], hashed, entrylistRegister[4], entrylistRegister[5]))
+            mydb.commit()
+            message.config(text="Benutzer wurde erfolgreich \n zum System hinzugefügt")
+            for entries in EntryBoxesRegister:
+                entries.delete(0, END)
+            root.update_idletasks()
+            root.after(4000, message.config(text=""))
+        else:
+            message.config(text="Bitte eine akzeptabel Etage eingeben. Versuche es nochmal")
+            EntryBoxesRegister[5].delete(0, END)
+
     else:
         message.config(text="Passwort sind nicht gleich. Versuche es nochmal")
         EntryBoxesRegister[2].delete(0, END)
         EntryBoxesRegister[3].delete(0, END)
+
+
 LabelsRegister = ["Vorname", "Nachname", "Passwort", "Passwort Wiederholen","Username", "Etage"]
 EntryBoxesRegister = []
 EntryBoxesPassword = []
@@ -247,6 +268,8 @@ for i, entryType in enumerate(LabelsRegister):
     label = Label(RegisterFrame, text=entryType + ": ")
     if entryType == "Passwort" or entryType == "Passwort Wiederholen":
         entryBox = Entry(RegisterFrame, show="*", width=25)
+    if entryType == "Etage":
+        entryBox = ttk.Combobox(RegisterFrame, value=etagen)
     else:
         entryBox = Entry(RegisterFrame, width=25)
     label.grid(row=i, column=0)
@@ -257,7 +280,6 @@ for i, entryType in enumerate(LabelsRegister):
 
 registerButton = Button(RegisterFrame, text="Registrieren", command=Register)
 registerButton.grid(row=6, column=1)
-
 
 # all the config and displaying items in the window
 
@@ -276,8 +298,8 @@ electricityInBox.grid(row=12, column=1)
 electricityInBox.config(font=('Arial', 18))
 logout.grid(row=13, column=1,sticky="w")
 logout.config(font=('Arial', 18))
-message = Label(WaschGUI, text="")
+message = Label(root, text="")
 message.config(font=('Arial', 18))
-message.grid(row=14, column=0)
+message.pack()
 
 root.mainloop()
