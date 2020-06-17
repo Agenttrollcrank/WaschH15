@@ -62,7 +62,7 @@ def SendNewRecord():
     try:
         if lastuser == usernameOptions.get() and electricityCurrent == "None":
             mycursor.execute(
-                "UPDATE h15.abrechnung SET Strom_bist = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (
+                "UPDATE h15.abrechnung SET Strom_bis = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (
                 str(electricityInBox.get()), usernameOptions.get(), machineString.get()))
         else:
             if (electricityCurrent != electricityInBox.get()) and electricityCurrent != "None":
@@ -71,7 +71,7 @@ def SendNewRecord():
             else:
                 if electricityInBox.get() != electricityOldValue:
                     mycursor.execute(
-                        "UPDATE h15.abrechnung SET Strom_bist = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (
+                        "UPDATE h15.abrechnung SET Strom_bis = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (
                             str(electricityInBox.get()), lastuser, machineString.get()))
             mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
             str(usernameOptions.get()), str(machineString.get()), electricityInBox.get(), "NULL"))
@@ -98,7 +98,7 @@ def Logout(): # excecute button
     lastuser = str(mycursor.fetchone())
     lastuser = lastuser.replace("('","")
     lastuser = lastuser.replace("',)","")
-    mycursor.execute("SELECT Strom_bist FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
+    mycursor.execute("SELECT Strom_bis FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
     electricityCurrent = str(mycursor.fetchone())
     electricityCurrent = electricityCurrent.replace("(","")
     electricityCurrent = electricityCurrent.replace(",)","")
@@ -125,7 +125,7 @@ def Logout(): # excecute button
 
 def TableUpdate(mch):
     headings = ["Name","Strom Von","Strom Bis"]
-    values = ["username","Strom_von","Strom_bist"]
+    values = ["username","Strom_von","Strom_bis"]
     for row in range(5):
         if row == 0:
             for column in range(3):

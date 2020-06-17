@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="6d7f4f75-86af-4328-9a74-5d436b56b03a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/Admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/GUI.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -20,8 +19,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/GUI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="501">
-              <caret line="250" column="49" lean-forward="true" selection-start-line="250" selection-start-column="49" selection-end-line="250" selection-end-column="49" />
+            <state relative-caret-position="482">
+              <caret line="143" column="27" lean-forward="true" selection-start-line="143" selection-start-column="27" selection-end-line="143" selection-end-column="27" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -54,6 +53,7 @@
       <find>Wasch</find>
       <find>title</find>
       <find>logo</find>
+      <find>bist</find>
     </findStrings>
     <replaceStrings>
       <replace>electricityInBox</replace>
@@ -201,7 +201,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.33152762" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.33152762" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39869988" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -250,8 +250,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/GUI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="501">
-          <caret line="250" column="49" lean-forward="true" selection-start-line="250" selection-start-column="49" selection-end-line="250" selection-end-column="49" />
+        <state relative-caret-position="482">
+          <caret line="143" column="27" lean-forward="true" selection-start-line="143" selection-start-column="27" selection-end-line="143" selection-end-column="27" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
           </folding>
