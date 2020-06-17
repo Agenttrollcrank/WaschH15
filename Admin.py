@@ -10,9 +10,6 @@ mydb = mysql.connector.connect(
     database='h15')
 
 mycursor = mydb.cursor(buffered=True)  # mysql cursor definition
-
-
-
 PowerWindow = Tk()  # define the windown
 PowerWindow.title("Register")
 PowerWindow.geometry("500x500")
@@ -92,8 +89,8 @@ for i, entryType in enumerate(LabelsReset):
 
 registerButton = Button(RegisterFrame, text="Eintragen", command=Register)
 registerButton.grid(row=6, column=1)
-registerButton = Button(PasswordResetFrame, text="Reset", command=ResetPassword)
-registerButton.grid(row=6, column=1)
+resetButton = Button(PasswordResetFrame, text="Reset", command=ResetPassword)
+resetButton.grid(row=6, column=1)
 message = Label(PowerWindow, text="")
 message.config(font=('Arial', 18))
 message.pack()

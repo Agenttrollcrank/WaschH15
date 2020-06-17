@@ -28,7 +28,7 @@ CREATE TABLE `abrechnung` (
     `username` VARCHAR(30) DEFAULT NULL,
     `machine` VARCHAR(30) DEFAULT NULL,
     `Strom_von` FLOAT DEFAULT NULL,
-    `Strom_bist` FLOAT DEFAULT NULL,
+    `Strom_bis` FLOAT DEFAULT NULL,
     FULLTEXT ( machine )
 );
 /*!40101 SET character_set_client = @saved_cs_client */;

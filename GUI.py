@@ -2,7 +2,7 @@ from tkinter import *
 import mysql.connector
 from tkinter import ttk
 import bcrypt
-import time
+
 
 # mysql connection all the login data
 mydb = mysql.connector.connect(
@@ -18,13 +18,31 @@ root = Tk()
 root.title("WaschH15")
 root.geometry("1080x850")
 
-Wasch = LabelFrame(root, padx=5, pady=5)
-Table = LabelFrame(root, padx=5, pady=5)
-
 try:
     logo = PhotoImage(file="D:/Github/WaschH15/hermann-logo-40.png")
+    logolabel = Label(root, image=logo, justify=RIGHT)
+    logolabel.pack()
 except:
     pass
+titleLabel = Label(root, text="WaschH15")
+titleLabel.pack()
+titleLabel.config(font=('Arial', 24))
+
+Notebook = ttk.Notebook(root)
+Notebook.pack(pady=15)
+
+WaschGUI = Frame(Notebook)
+RegisterFrame = Frame(Notebook)
+
+WaschGUI.pack(fill="both", expand=1)
+RegisterFrame.pack(fill="both", expand=1)
+
+Notebook.add(WaschGUI, text="Waschen")
+Notebook.add(RegisterFrame, text="Register")
+
+
+Table = LabelFrame(root, padx=5, pady=5)
+
 # variable definitions
 electricityOldValue = int
 electricityPosb = [0]
@@ -47,18 +65,24 @@ def SendNewRecord():
                 "UPDATE h15.abrechnung SET Strom_bist = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (
                 str(electricityInBox.get()), usernameOptions.get(), machineString.get()))
         else:
-            if float(electricityCurrent) != float(electricityInBox.get()):
+            if (electricityCurrent != electricityInBox.get()) and electricityCurrent != "None":
                 mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
                 "Kameradenschwein", str(machineString.get()), str(electricityOldValue), electricityInBox.get()))
+            else:
+                if electricityInBox.get() != electricityOldValue:
+                    mycursor.execute(
+                        "UPDATE h15.abrechnung SET Strom_bist = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (
+                            str(electricityInBox.get()), lastuser, machineString.get()))
             mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
             str(usernameOptions.get()), str(machineString.get()), electricityInBox.get(), "NULL"))
         mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityInBox.get()) + " WHERE Waschmachine = '" + str(
             machineString.get()) + "'")
-        message.config(text="Alles Klar! Danke dir! :D")
+        message.config(text="")
         electricityInBox.delete(0, END)
         electricityInBox.insert(0, electricityInBox.get())
         passwordIN.delete(0, END)
         electricityInBox.delete(0, END)
+        NewSelection()
         mydb.commit()
         TableUpdate(str(machineString.get()))
     except:
@@ -100,7 +124,7 @@ def Logout(): # excecute button
         message.config(text="Falsche Benutzername")
 
 def TableUpdate(mch):
-    headings = ["Name","Strom Von","Strom Bist"]
+    headings = ["Name","Strom Von","Strom Bis"]
     values = ["username","Strom_von","Strom_bist"]
     for row in range(5):
         if row == 0:
@@ -151,7 +175,7 @@ def NewSelection(): #machine choice buttons, changes the text and previous value
     electricityInBox.delete(0, END)
     electricityInBox.insert(0, electricityOldValue)
     electricityPosb = []
-    for pos in frange_positve(str(electricityOldValue).split(".")[1], int(str(electricityOldValue).split(".")[1]) + 15, 1):
+    for pos in range(1, 15):
         pos = pos / 10
         electricityPosb.append(round(electricityOldValue + pos, 1))
     electricityInBox.config(value=electricityPosb)
@@ -175,52 +199,68 @@ for user in usernames:
     usernames[userCount] = clean
     userCount += 1
 
-def frange_positve(start, stop=None, step=None):
-    if stop == None:
-        stop = start + 0.0
-        start = 0.0
-    if step == None:
-        step = 1.0
-    count = 0
-    while True:
-        temp = float(int(start) + int(count) * int(step))
-        if temp >= stop:
-            break
-        yield temp
-        count += 1
-
-
-usernameOptions = ttk.Combobox(Wasch, value=usernames)
+usernameOptions = ttk.Combobox(WaschGUI, value=usernames)
 usernameOptions.current(0)
-passwordIN = Entry(Wasch, show="*", width=25)
-electricityInBox = ttk.Combobox(Wasch, value=electricityPosb)
+passwordIN = Entry(WaschGUI, show="*", width=25)
+electricityInBox = ttk.Combobox(WaschGUI, value=electricityPosb)
 electricityInBox.current(0)
-logout = Button(Wasch, text="Eintragen", command=Logout)
-titleLabel = Label(root, text="WaschH15")
-usernameLabel = Label(Wasch, text="Benutzername: ")
-passwordLabel = Label(Wasch, text="Passwort: ")
-machineSelection = Label(Wasch, text="")
-electricityInLabel = Label(Wasch, text="Strom Stand: ")
+logout = Button(WaschGUI, text="Eintragen", command=Logout)
+
+usernameLabel = Label(WaschGUI, text="Benutzername: ")
+passwordLabel = Label(WaschGUI, text="Passwort: ")
+machineSelection = Label(WaschGUI, text="")
+electricityInLabel = Label(WaschGUI, text="Strom Stand: ")
 
 # drawing the radio buttons on the screen
 machineString = StringVar()
 line = 3
 for text, machine in MACHINES:
-    button = Radiobutton(Wasch, text=text, variable=machineString, value=machine, tristatevalue=0, command=lambda: NewSelection())
+    button = Radiobutton(WaschGUI, text=text, variable=machineString, value=machine, tristatevalue=0, command=lambda: NewSelection())
     button.grid(row=line, column=1, sticky="w")
     button.config(font=('Arial', 18))
     line += 1
+# register screen
 
-# showing it on screen
-try:
-    logolabel = Label(root, image=logo, justify=RIGHT)
-    logolabel.pack()
-except:
-    pass
+
+def Register():
+    entrylistRegister = []
+    for entries in EntryBoxesRegister:
+        entrylistRegister.append(entries.get())
+    hashed = bcrypt.hashpw(entrylistRegister[2].encode("utf-8"), bcrypt.gensalt())
+    hashed = str(hashed).replace("b'", "")
+    hashed = str(hashed).replace("'", "")
+    if entrylistRegister[2] == entrylistRegister[3] and entrylistRegister[2] != "":
+        mycursor.execute("INSERT INTO benutzer (Vorname,Nachname,Passwort,Username,Etage) VALUES ('%s', '%s', '%s', '%s', '%s')"
+                         %(entrylistRegister[0], entrylistRegister[1], hashed, entrylistRegister[4], entrylistRegister[5]))
+        mydb.commit()
+        message.config(text="Benutzer wurde erfolgreich \n zum System hinzugefügt")
+        for entries in EntryBoxesRegister:
+            entries.delete(0, END)
+    else:
+        message.config(text="Passwort sind nicht gleich. Versuche es nochmal")
+        EntryBoxesRegister[2].delete(0, END)
+        EntryBoxesRegister[3].delete(0, END)
+LabelsRegister = ["Vorname", "Nachname", "Passwort", "Passwort Wiederholen","Username", "Etage"]
+EntryBoxesRegister = []
+EntryBoxesPassword = []
+for i, entryType in enumerate(LabelsRegister):
+    label = Label(RegisterFrame, text=entryType + ": ")
+    if entryType == "Passwort" or entryType == "Passwort Wiederholen":
+        entryBox = Entry(RegisterFrame, show="*", width=25)
+    else:
+        entryBox = Entry(RegisterFrame, width=25)
+    label.grid(row=i, column=0)
+    entryBox.grid(row=i, column=1)
+    label.config(font=('Arial', 18))
+    entryBox.config(font=('Arial', 18))
+    EntryBoxesRegister.append(entryBox)
+
+registerButton = Button(RegisterFrame, text="Registrieren", command=Register)
+registerButton.grid(row=6, column=1)
+
+
 # all the config and displaying items in the window
-titleLabel.pack()
-titleLabel.config(font=('Arial', 24))
-Wasch.pack()
+
 Table.pack()
 usernameLabel.grid(row=1, column=0)
 usernameLabel.config(font=('Arial', 18))
@@ -236,7 +276,7 @@ electricityInBox.grid(row=12, column=1)
 electricityInBox.config(font=('Arial', 18))
 logout.grid(row=13, column=1,sticky="w")
 logout.config(font=('Arial', 18))
-message = Label(Wasch, text="")
+message = Label(WaschGUI, text="")
 message.config(font=('Arial', 18))
 message.grid(row=14, column=0)
 
