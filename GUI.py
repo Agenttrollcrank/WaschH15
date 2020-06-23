@@ -103,7 +103,9 @@ def SendNewRecord():
 def Logout(): # excecute button
     global lastuser
     global electricityCurrent
+    global sl
     # credential checkg
+    mycursor.execute("SELECT Kwh FROM h15.strom LIMIT " + str(sl) +",1")
     electricityOldValue = str(mycursor.fetchone())
     electricityOldValue = electricityOldValue.replace("(", "")
     electricityOldValue = electricityOldValue.replace(",)", "")
@@ -161,6 +163,7 @@ def NewSelection(): #machine choice buttons, changes the text and previous value
     global electricityPosb
     global electricityOldValue
     global electricityInBox
+    global sl
     machineSelection.config(text=machineString.get())
     if machineString.get() == "Altbau":
         sl = 0
