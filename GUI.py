@@ -104,6 +104,10 @@ def Logout(): # excecute button
     global lastuser
     global electricityCurrent
     # credential checkg
+    electricityOldValue = str(mycursor.fetchone())
+    electricityOldValue = electricityOldValue.replace("(", "")
+    electricityOldValue = electricityOldValue.replace(",)", "")
+    electricityOldValue = float(electricityOldValue)
     mycursor.execute("SELECT username FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
     lastuser = str(mycursor.fetchone())
     lastuser = lastuser.replace("('","")
