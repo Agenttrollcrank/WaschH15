@@ -55,7 +55,7 @@ def Confirm(oldElectricity,newElectricity):
     top.title("Bestätigun")
     Label(top, text="Alte Strom Stand: %s" % (str(oldElectricity))).pack()
     Label(top, text="Neue Strom Stand: %s" % (str(newElectricity))).pack()
-    Button(top, text="Bestätigen", command=lambda: [SendNewRecord(), top.destroy()]).pack()
+    Button(top, text="Bestätigen", command=lambda: [top.destroy(), SendNewRecord()]).pack()
     Button(top, text="Exit", command=top.destroy).pack()
     top.update_idletasks()
     width = top.winfo_width()
@@ -63,6 +63,7 @@ def Confirm(oldElectricity,newElectricity):
     x = (top.winfo_screenwidth() // 2) - (width // 2)
     y = (top.winfo_screenheight() // 2) - (height // 2)
     top.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+
 
 def SendNewRecord():
     global lastuser
@@ -85,18 +86,20 @@ def SendNewRecord():
             str(usernameOptions.get()), str(machineString.get()), electricityInBox.get(), "NULL"))
         mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityInBox.get()) + " WHERE Waschmachine = '" + str(
             machineString.get()) + "'")
-        message.config(text="Alles Klar, Danke Dir :D")
+        message.config(text="Alles Klar, Danke Dir :D Die tabelle wird Aktualisiert")
         electricityInBox.delete(0, END)
         electricityInBox.insert(0, electricityInBox.get())
         passwordIN.delete(0, END)
         electricityInBox.delete(0, END)
         mydb.commit()
         TableUpdate(str(machineString.get()))
+        NewSelection()
     except:
-       message.config(text="Irgendein Error ist aufgetreten, sorry... ")
+        message.config(text="irgendwas ist schief gelaufenn")
     finally:
         root.update_idletasks()
-        root.after(4000, message.config(text=""))
+        root.after(2000, message.config(text=""))
+
 
 # define the function for buttons
 
@@ -104,12 +107,7 @@ def Logout(): # excecute button
     global lastuser
     global electricityCurrent
     global sl
-    # credential checkg
-    mycursor.execute("SELECT Kwh FROM h15.strom LIMIT " + str(sl) +",1")
-    electricityOldValue = str(mycursor.fetchone())
-    electricityOldValue = electricityOldValue.replace("(", "")
-    electricityOldValue = electricityOldValue.replace(",)", "")
-    electricityOldValue = float(electricityOldValue)
+    # credential check
     mycursor.execute("SELECT username FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
     lastuser = str(mycursor.fetchone())
     lastuser = lastuser.replace("('","")
@@ -125,15 +123,11 @@ def Logout(): # excecute button
         hashed = hashed.replace("('", "")
         hashed = hashed.replace("',)", "")
         if bcrypt.checkpw((passwordIN.get()).encode("utf-8"), hashed.encode("utf-8")):
-            try:
-                if float(electricityInBox.get()) >= electricityOldValue:
-                    Confirm(electricityOldValue,electricityInBox.get())
-                else:  # ValueError
-                    message.config(text="Bitte geben Sie einen größeren Wert ein")
-            except ValueError:
-                message.config(text="Bitte eine Zahl Eingeben")
-            except:
-                message.config(text="Irgendein Error ist aufgetreten, sorry... ")
+            if float(electricityInBox.get()) >= electricityOldValue:
+                Confirm(electricityOldValue, electricityInBox.get())
+
+            else:
+                message.config(text="Bitte geben Sie einen größeren Wert ein")
         else:
             message.config(text="Falsche Passwort")
     else:
@@ -163,7 +157,6 @@ def NewSelection(): #machine choice buttons, changes the text and previous value
     global electricityPosb
     global electricityOldValue
     global electricityInBox
-    global sl
     machineSelection.config(text=machineString.get())
     if machineString.get() == "Altbau":
         sl = 0
