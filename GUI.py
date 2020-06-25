@@ -40,7 +40,6 @@ RegisterFrame.pack(fill="both", expand=1)
 Notebook.add(WaschGUI, text="Waschen")
 Notebook.add(RegisterFrame, text="registrieren")
 
-
 Table = LabelFrame(root, padx=5, pady=5)
 
 # variable definitions
@@ -242,26 +241,28 @@ def Register():
     hashed = str(hashed).replace("b'", "")
     hashed = str(hashed).replace("'", "")
     if entrylistRegister[2] == entrylistRegister[3] and entrylistRegister[2] != "":
-        if any(entrylistRegister[5] == etage for etage in etagen):
-            mycursor.execute("INSERT INTO benutzer (Vorname,Nachname,Passwort,Username,Etage) VALUES ('%s', '%s', '%s', '%s', '%s')"
-                             %(entrylistRegister[0], entrylistRegister[1], hashed, entrylistRegister[4], entrylistRegister[5]))
-            mydb.commit()
-            message.config(text="Benutzer wurde erfolgreich \n zum System hinzugefügt")
-            for entries in EntryBoxesRegister:
-                entries.delete(0, END)
-            root.update_idletasks()
-            root.after(4000, message.config(text=""))
+        if entrylistRegister[6] == "h15rocks!":
+            if any(entrylistRegister[5] == etage for etage in etagen):
+                mycursor.execute("INSERT INTO benutzer (Vorname,Nachname,Passwort,Username,Etage) VALUES ('%s', '%s', '%s', '%s', '%s')"
+                                 %(entrylistRegister[0], entrylistRegister[1], hashed, entrylistRegister[4], entrylistRegister[5]))
+                mydb.commit()
+                message.config(text="Benutzer wurde erfolgreich \n zum System hinzugefügt")
+                for entries in EntryBoxesRegister:
+                    entries.delete(0, END)
+                root.update_idletasks()
+                root.after(4000, message.config(text=""))
+            else:
+                message.config(text="Bitte eine akzeptabel Etage eingeben. Versuche es nochmal")
+                EntryBoxesRegister[5].delete(0, END)
         else:
-            message.config(text="Bitte eine akzeptabel Etage eingeben. Versuche es nochmal")
-            EntryBoxesRegister[5].delete(0, END)
-
+            message.config(text="Bitte Admin Password richtig eingeben")
     else:
         message.config(text="Passwort sind nicht gleich. Versuche es nochmal")
         EntryBoxesRegister[2].delete(0, END)
         EntryBoxesRegister[3].delete(0, END)
 
 
-LabelsRegister = ["Vorname", "Nachname", "Passwort", "Passwort Wiederholen","Username", "Etage"]
+LabelsRegister = ["Vorname", "Nachname", "Passwort", "Passwort Wiederholen","Username", "Etage","Admin_Pass"]
 EntryBoxesRegister = []
 EntryBoxesPassword = []
 for i, entryType in enumerate(LabelsRegister):
@@ -279,7 +280,7 @@ for i, entryType in enumerate(LabelsRegister):
     EntryBoxesRegister.append(entryBox)
 
 registerButton = Button(RegisterFrame, text="Registrieren", command=Register)
-registerButton.grid(row=6, column=1)
+registerButton.grid(row=7, column=1)
 
 # all the config and displaying items in the window
 
