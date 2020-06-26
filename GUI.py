@@ -42,15 +42,17 @@ Notebook.add(RegisterFrame, text="registrieren")
 
 Table = LabelFrame(root, padx=5, pady=5)
 
+
 # variable definitions
 electricityOldValue = int
 electricityPosb = [0]
 etagen = ["1","2","3","4","Altbau","Hinterlieger","Ehepaar_Neubau","Ehepaar_Hinterlieger","Einzel_Wohnung"]
 
 # confirmation window
-
+mycursor.execute("DELETE FROM abrechnung")
 def Confirm(oldElectricity,newElectricity):
     top = Toplevel()
+    top.grab_set()
     top.title("Bestätigun")
     Label(top, text="Alte Strom Stand: %s" % (str(oldElectricity))).pack()
     Label(top, text="Neue Strom Stand: %s" % (str(newElectricity))).pack()
@@ -62,7 +64,6 @@ def Confirm(oldElectricity,newElectricity):
     x = (top.winfo_screenwidth() // 2) - (width // 2)
     y = (top.winfo_screenheight() // 2) - (height // 2)
     top.geometry('{}x{}+{}+{}'.format(width, height, x, y))
-
 
 def SendNewRecord():
     global lastuser
