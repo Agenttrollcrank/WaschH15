@@ -2,7 +2,6 @@ from tkinter import *
 import mysql.connector
 from tkinter import ttk
 import bcrypt
-import time
 
 # mysql connection all the login data
 mydb = mysql.connector.connect(
@@ -32,13 +31,16 @@ Notebook = ttk.Notebook(root)
 Notebook.pack(pady=15)
 
 WaschGUI = Frame(Notebook)
-RegisterFrame = Frame(Notebook)
+ChangePasswordFrame = Frame(Notebook)
+#AbbrechnungFrame = Frame(Notebook)
 
 WaschGUI.pack(fill="both", expand=1)
-RegisterFrame.pack(fill="both", expand=1)
+ChangePasswordFrame.pack(fill="both", expand=1)
+#AbbrechnungFrame.pack(fill="both", expand=1)
 
 Notebook.add(WaschGUI, text="Waschen")
-Notebook.add(RegisterFrame, text="registrieren")
+Notebook.add(ChangePasswordFrame, text="Passwort Ändern")
+#Notebook.add(AbbrechnungFrame, text="AbbrechnungFrame")
 
 Table = LabelFrame(root, padx=5, pady=5)
 
@@ -48,8 +50,29 @@ electricityOldValue = int
 electricityPosb = [0]
 etagen = ["1","2","3","4","Altbau","Hinterlieger","Ehepaar_Neubau","Ehepaar_Hinterlieger","Einzel_Wohnung"]
 
+
+def Abbrechnung():
+    # Open and read the file as a single buffer
+    fd = open('D:\Github\WaschH15\SQL Skripts and Tables\Abrechnungsskript.sql', 'r')
+    sqlFile = fd.read()
+    fd.close()
+
+    # all SQL commands (split on ';')
+    sqlCommands = sqlFile.split(';')
+
+    # Execute every command from the input file
+    for command in sqlCommands:
+        # This will skip and report errors
+        # For example, if the tables do not yet exist, this will skip over
+        # the DROP TABLE commands
+        try:
+            print(command)
+            mycursor.execute(command)
+        except():
+            print("Command skipped: ", command)
+    mydb.commit()
+
 # confirmation window
-mycursor.execute("DELETE FROM abrechnung")
 def Confirm(oldElectricity,newElectricity):
     top = Toplevel()
     top.grab_set()
@@ -125,7 +148,6 @@ def Logout(): # excecute button
         if bcrypt.checkpw((passwordIN.get()).encode("utf-8"), hashed.encode("utf-8")):
             if float(electricityInBox.get()) >= electricityOldValue:
                 Confirm(electricityOldValue, electricityInBox.get())
-
             else:
                 message.config(text="Bitte geben Sie einen größeren Wert ein")
         else:
@@ -231,60 +253,76 @@ for text, machine in MACHINES:
     button.grid(row=line, column=1, sticky="w")
     button.config(font=('Arial', 18))
     line += 1
-# register screen
-
-
-def Register():
-    entrylistRegister = []
-    for entries in EntryBoxesRegister:
-        entrylistRegister.append(entries.get())
-    hashed = bcrypt.hashpw(entrylistRegister[2].encode("utf-8"), bcrypt.gensalt())
+# change password screen
+EntryBoxesPassword = []
+def ChangePassword():
+    entrylistPassword = []
+    for entries in EntryBoxesPassword:
+        entrylistPassword.append(entries.get())
+    hashed = bcrypt.hashpw(entrylistPassword[2].encode("utf-8"), bcrypt.gensalt())
     hashed = str(hashed).replace("b'", "")
     hashed = str(hashed).replace("'", "")
-    if entrylistRegister[2] == entrylistRegister[3] and entrylistRegister[2] != "":
-        if entrylistRegister[6] == "h15rocks!":
-            if any(entrylistRegister[5] == etage for etage in etagen):
-                mycursor.execute("INSERT INTO benutzer (Vorname,Nachname,Passwort,Username,Etage) VALUES ('%s', '%s', '%s', '%s', '%s')"
-                                 %(entrylistRegister[0], entrylistRegister[1], hashed, entrylistRegister[4], entrylistRegister[5]))
-                mydb.commit()
-                message.config(text="Benutzer wurde erfolgreich \n zum System hinzugefügt")
-                for entries in EntryBoxesRegister:
-                    entries.delete(0, END)
-                root.update_idletasks()
-                root.after(4000, message.config(text=""))
+    if entrylistPassword[4] == entrylistPassword[3] and entrylistPassword[4] != "":
+        if entrylistPassword[7] == "h15rocks!":
+            mycursor.execute("SELECT Passwort FROM h15.benutzer WHERE username='%s'" % (
+                entrylistPassword[5]))  # same thing for the password
+            hashedold = str(mycursor.fetchone())
+            hashedold = hashedold.replace("('", "")
+            hashedold = hashedold.replace("',)", "")
+            if bcrypt.checkpw(entrylistPassword[3].encode("utf-8"), hashedold.encode("utf-8")):
+                try:
+                    mycursor.execute("UPDATE benutzer SET Passwort = '%s' WHERE Vorname = '%s' AND Nachname = '%s' AND Username = '%s' AND Etage = '%s'" % (hashed, entrylistPassword[0], entrylistPassword[1], entrylistPassword[5], entrylistPassword[6]))
+                    message.config(text="Passwort wurde Aktualisiert")
+                except:
+                    message.config(text="Es gibt ein fehlre sorry, versuche ich nochmal")
             else:
-                message.config(text="Bitte eine akzeptabel Etage eingeben. Versuche es nochmal")
-                EntryBoxesRegister[5].delete(0, END)
+                message.config(text="Falsche Alte Passwort")
         else:
             message.config(text="Bitte Admin Password richtig eingeben")
     else:
-        message.config(text="Passwort sind nicht gleich. Versuche es nochmal")
-        EntryBoxesRegister[2].delete(0, END)
-        EntryBoxesRegister[3].delete(0, END)
+        message.config(text="Neues Passwort nicht gleich")
+    mydb.commit()
+    for entries in EntryBoxesPassword:
+        entries.delete(0, END)
 
-
-LabelsRegister = ["Vorname", "Nachname", "Passwort", "Passwort Wiederholen","Username", "Etage","Admin_Pass"]
-EntryBoxesRegister = []
-EntryBoxesPassword = []
-for i, entryType in enumerate(LabelsRegister):
-    label = Label(RegisterFrame, text=entryType + ": ")
-    if entryType == "Passwort" or entryType == "Passwort Wiederholen":
-        entryBox = Entry(RegisterFrame, show="*", width=25)
-    if entryType == "Etage":
-        entryBox = ttk.Combobox(RegisterFrame, value=etagen)
+LabelsReset = ["Vorname", "Nachname", "Alte Passwot", "Neues Passwort","Neues Passwort Wiederholen", "Username", "Etage", "Admin_Passwort"]
+for i, entryType in enumerate(LabelsReset):
+    label = Label(ChangePasswordFrame, text=entryType + ": ")
+    if entryType == "Passwort":
+        entryBox = Entry(ChangePasswordFrame, show="*", width=25)
     else:
-        entryBox = Entry(RegisterFrame, width=25)
+        entryBox = Entry(ChangePasswordFrame, width=25)
     label.grid(row=i, column=0)
     entryBox.grid(row=i, column=1)
     label.config(font=('Arial', 18))
     entryBox.config(font=('Arial', 18))
-    EntryBoxesRegister.append(entryBox)
+    EntryBoxesPassword.append(entryBox)
 
-registerButton = Button(RegisterFrame, text="Registrieren", command=Register)
-registerButton.grid(row=7, column=1)
+ChangePasswordButton = Button(ChangePasswordFrame, text="Registrieren", command=ChangePassword)
+ChangePasswordButton.grid(row=8, column=1)
+#abrechnung
+# def AbrechnungTable():
+#     Abbrechnung()
+#     headings = ["Nachname","Kosten","Verbrauch","etage"]
+#     for row in range(20):
+#         if row == 0:
+#             for column in range(4):
+#                 label = Label(Table, text=headings[column], bg="white", fg="black", padx=30, pady=3)
+#                 label.grid(row=row,column=(column),sticky="nsew",padx=1,pady=1)
+#                 label.config(font=('Arial', 10, "bold"))
+#                 Table.grid_columnconfigure((column),weight=1)
+#         else:
+#             for column in range(4):
+#                 mycursor.execute("SELECT %s FROM h15.Zusammenfassung ORDER BY Nachname DESC limit %s,1" % (str(headings[column]), str(row-1)))
+#                 label = Label(Table, text=mycursor.fetchone(), bg="white", fg="black", padx=30, pady=3)
+#                 label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
+#                 label.config(font=('Arial', 10))
+#                 Table.grid_columnconfigure(column, weight=1)
+#
+# abrechnenButton = Button(AbbrechnungFrame, text="Registrieren", command=AbrechnungTable)
+# abrechnenButton.grid(row=1, column=1)
 
 # all the config and displaying items in the window
-
 Table.pack()
 usernameLabel.grid(row=1, column=0)
 usernameLabel.config(font=('Arial', 18))
