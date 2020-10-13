@@ -32,45 +32,19 @@ Notebook.pack(pady=15)
 
 WaschGUI = Frame(Notebook)
 ChangePasswordFrame = Frame(Notebook)
-#AbbrechnungFrame = Frame(Notebook)
 
 WaschGUI.pack(fill="both", expand=1)
 ChangePasswordFrame.pack(fill="both", expand=1)
-#AbbrechnungFrame.pack(fill="both", expand=1)
 
 Notebook.add(WaschGUI, text="Waschen")
 Notebook.add(ChangePasswordFrame, text="Passwort ändern")
-#Notebook.add(AbbrechnungFrame, text="AbbrechnungFrame")
 
 Table = LabelFrame(root, padx=5, pady=5)
-
 
 # variable definitions
 electricityOldValue = int
 electricityPosb = [0]
 etagen = ["1","2","3","4","Altbau","Hinterlieger","Ehepaar_Neubau","Ehepaar_Hinterlieger","Einzel_Wohnung"]
-
-
-def Abbrechnung():
-    # Open and read the file as a single buffer
-    fd = open('D:\Github\WaschH15\SQL Skripts and Tables\Abrechnungsskript.sql', 'r')
-    sqlFile = fd.read()
-    fd.close()
-
-    # all SQL commands (split on ';')
-    sqlCommands = sqlFile.split(';')
-
-    # Execute every command from the input file
-    for command in sqlCommands:
-        # This will skip and report errors
-        # For example, if the tables do not yet exist, this will skip over
-        # the DROP TABLE commands
-        try:
-            print(command)
-            mycursor.execute(command)
-        except():
-            print("Command skipped: ", command)
-    mydb.commit()
 
 # confirmation window
 def Confirm(oldElectricity,newElectricity):
@@ -298,29 +272,7 @@ for i, entryType in enumerate(LabelsReset):
 
 ChangePasswordButton = Button(ChangePasswordFrame, text="Zurücksetzen", command=ChangePassword)
 ChangePasswordButton.grid(row=8, column=1)
-#abrechnung
-# def AbrechnungTable():
-#     Abbrechnung()
-#     headings = ["Nachname","Kosten","Verbrauch","etage"]
-#     for row in range(20):
-#         if row == 0:
-#             for column in range(4):
-#                 label = Label(Table, text=headings[column], bg="white", fg="black", padx=30, pady=3)
-#                 label.grid(row=row,column=(column),sticky="nsew",padx=1,pady=1)
-#                 label.config(font=('Arial', 10, "bold"))
-#                 Table.grid_columnconfigure((column),weight=1)
-#         else:
-#             for column in range(4):
-#                 mycursor.execute("SELECT %s FROM h15.Zusammenfassung ORDER BY Nachname DESC limit %s,1" % (str(headings[column]), str(row-1)))
-#                 label = Label(Table, text=mycursor.fetchone(), bg="white", fg="black", padx=30, pady=3)
-#                 label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
-#                 label.config(font=('Arial', 10))
-#                 Table.grid_columnconfigure(column, weight=1)
-#
-# abrechnenButton = Button(AbbrechnungFrame, text="Registrieren", command=AbrechnungTable)
-# abrechnenButton.grid(row=1, column=1)
 
-# all the config and displaying items in the window
 Table.pack()
 usernameLabel.grid(row=1, column=0)
 usernameLabel.config(font=('Arial', 18))
