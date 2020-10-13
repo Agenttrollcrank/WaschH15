@@ -39,7 +39,7 @@ ChangePasswordFrame.pack(fill="both", expand=1)
 #AbbrechnungFrame.pack(fill="both", expand=1)
 
 Notebook.add(WaschGUI, text="Waschen")
-Notebook.add(ChangePasswordFrame, text="Passwort Ändern")
+Notebook.add(ChangePasswordFrame, text="Passwort ändern")
 #Notebook.add(AbbrechnungFrame, text="AbbrechnungFrame")
 
 Table = LabelFrame(root, padx=5, pady=5)
@@ -76,14 +76,14 @@ def Abbrechnung():
 def Confirm(oldElectricity,newElectricity):
     top = Toplevel()
     top.grab_set()
-    top.title("Bestätigun")
-    Label(top, text="Alte Strom Stand: %s" % (str(oldElectricity))).pack()
-    Label(top, text="Neue Strom Stand: %s" % (str(newElectricity))).pack()
-    Button(top, text="Bestätigen", command=lambda: [top.destroy(), SendNewRecord()]).pack()
-    Button(top, text="Exit", command=top.destroy).pack()
+    top.title("Bestätigung")
+    Label(top, text="Alter Stromstand: %s" % (str(oldElectricity)), font=('Arial',14)).pack()
+    Label(top, text="Neuer Stromstand: %s" % (str(newElectricity)), font=('Arial', 14)).pack()
+    Button(top, text="Bestätigen", command=lambda: [top.destroy(), SendNewRecord()],font=('Arial', 14)).pack()
+    Button(top, text="Exit", command=top.destroy, font=('Arial', 14)).pack()
     top.update_idletasks()
-    width = top.winfo_width()
-    height = top.winfo_height()
+    width = 200
+    height = 200
     x = (top.winfo_screenwidth() // 2) - (width // 2)
     y = (top.winfo_screenheight() // 2) - (height // 2)
     top.geometry('{}x{}+{}+{}'.format(width, height, x, y))
@@ -109,7 +109,7 @@ def SendNewRecord():
             str(usernameOptions.get()), str(machineString.get()), electricityInBox.get(), "NULL"))
         mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityInBox.get()) + " WHERE Waschmachine = '" + str(
             machineString.get()) + "'")
-        message.config(text="Alles Klar, Danke Dir :D Die tabelle wird Aktualisiert")
+        message.config(text="Alles Klar, Danke Dir :D Die Tabelle wird aktualisiert")
         electricityInBox.delete(0, END)
         electricityInBox.insert(0, electricityInBox.get())
         passwordIN.delete(0, END)
@@ -118,7 +118,7 @@ def SendNewRecord():
         TableUpdate(str(machineString.get()))
         NewSelection()
     except:
-        message.config(text="irgendwas ist schief gelaufenn")
+        message.config(text="Irgendwas ist schief gelaufen, melde dich beim Netzwerkverein")
     finally:
         root.update_idletasks()
         root.after(2000, message.config(text=""))
@@ -131,11 +131,11 @@ def Logout(): # excecute button
     global electricityCurrent
     global sl
     # credential check
-    mycursor.execute("SELECT username FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
+    mycursor.execute("SELECT username FROM h15.abrechnung WHERE machine = '%s' ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
     lastuser = str(mycursor.fetchone())
     lastuser = lastuser.replace("('","")
     lastuser = lastuser.replace("',)","")
-    mycursor.execute("SELECT Strom_bis FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
+    mycursor.execute("SELECT Strom_bis FROM h15.abrechnung WHERE machine = '%s' ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
     electricityCurrent = str(mycursor.fetchone())
     electricityCurrent = electricityCurrent.replace("(","")
     electricityCurrent = electricityCurrent.replace(",)","")
@@ -149,11 +149,11 @@ def Logout(): # excecute button
             if float(electricityInBox.get()) >= electricityOldValue:
                 Confirm(electricityOldValue, electricityInBox.get())
             else:
-                message.config(text="Bitte geben Sie einen größeren Wert ein")
+                message.config(text="Bitte gib einen größeren Wert ein")
         else:
-            message.config(text="Falsche Passwort")
+            message.config(text="Falsches Passwort")
     else:
-        message.config(text="Falsche Benutzername")
+        message.config(text="Falscher Benutzername")
 
 def TableUpdate(mch):
     headings = ["Name","Strom Von","Strom Bis"]
@@ -167,7 +167,7 @@ def TableUpdate(mch):
                 Table.grid_columnconfigure((column),weight=1)
         else:
             for column in range(3):
-                mycursor.execute("SELECT %s FROM h15.abrechnung WHERE MATCH(machine) AGAINST('%s') ORDER BY Strom_von DESC limit %s,1" % (str(values[column]), mch, str(row-1)))
+                mycursor.execute("SELECT %s FROM h15.abrechnung WHERE abrechnung.machine='%s' ORDER BY Strom_von DESC limit %s,1" % (str(values[column]), mch, str(row-1)))
                 label = Label(Table, text=mycursor.fetchone(), bg="white", fg="black", padx=30, pady=3)
                 label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
                 label.config(font=('Arial', 18))
@@ -243,7 +243,7 @@ logout = Button(WaschGUI, text="Eintragen", command=Logout)
 usernameLabel = Label(WaschGUI, text="Benutzername: ")
 passwordLabel = Label(WaschGUI, text="Passwort: ")
 machineSelection = Label(WaschGUI, text="")
-electricityInLabel = Label(WaschGUI, text="Strom Stand: ")
+electricityInLabel = Label(WaschGUI, text="Stromstand: ")
 
 # drawing the radio buttons on the screen
 machineString = StringVar()
@@ -263,29 +263,27 @@ def ChangePassword():
     hashed = str(hashed).replace("b'", "")
     hashed = str(hashed).replace("'", "")
     if entrylistPassword[4] == entrylistPassword[3] and entrylistPassword[4] != "":
-        if entrylistPassword[7] == "h15rocks!":
-            mycursor.execute("SELECT Passwort FROM h15.benutzer WHERE username='%s'" % (
-                entrylistPassword[5]))  # same thing for the password
-            hashedold = str(mycursor.fetchone())
-            hashedold = hashedold.replace("('", "")
-            hashedold = hashedold.replace("',)", "")
-            if bcrypt.checkpw(entrylistPassword[3].encode("utf-8"), hashedold.encode("utf-8")):
-                try:
-                    mycursor.execute("UPDATE benutzer SET Passwort = '%s' WHERE Vorname = '%s' AND Nachname = '%s' AND Username = '%s' AND Etage = '%s'" % (hashed, entrylistPassword[0], entrylistPassword[1], entrylistPassword[5], entrylistPassword[6]))
-                    message.config(text="Passwort wurde Aktualisiert")
-                except:
-                    message.config(text="Es gibt ein fehlre sorry, versuche ich nochmal")
-            else:
-                message.config(text="Falsche Alte Passwort")
+        mycursor.execute("SELECT Passwort FROM h15.benutzer WHERE username='%s'" % (
+            entrylistPassword[5]))  # same thing for the password
+        hashedold = str(mycursor.fetchone())
+        hashedold = hashedold.replace("('", "")
+        hashedold = hashedold.replace("',)", "")
+        print('%s , %s' % (str(entrylistPassword[2].encode("utf-8")), str(hashedold.encode("utf-8"))))
+        if bcrypt.checkpw(entrylistPassword[2].encode("utf-8"), hashedold.encode("utf-8")):
+            try:
+                mycursor.execute("UPDATE benutzer SET Passwort = '%s' WHERE Vorname = '%s' AND Nachname = '%s' AND Username = '%s' AND Etage = '%s'" % (hashed, entrylistPassword[0], entrylistPassword[1], entrylistPassword[5], entrylistPassword[6]))
+                message.config(text="Passwort wurde aktualisiert")
+            except:
+                message.config(text="Es gibt einen Fehler sorry, versuche es nochmal")
         else:
-            message.config(text="Bitte Admin Password richtig eingeben")
+            message.config(text="Falsches altes Passwort")
     else:
-        message.config(text="Neues Passwort nicht gleich")
+        message.config(text="Passwörter stimmen nicht überein")
     mydb.commit()
     for entries in EntryBoxesPassword:
         entries.delete(0, END)
 
-LabelsReset = ["Vorname", "Nachname", "Alte Passwot", "Neues Passwort","Neues Passwort Wiederholen", "Username", "Etage", "Admin_Passwort"]
+LabelsReset = ["Vorname", "Nachname", "Alte Passwot", "Neues Passwort","Neues Passwort Wiederholen", "Username", "Etage"]
 for i, entryType in enumerate(LabelsReset):
     label = Label(ChangePasswordFrame, text=entryType + ": ")
     if entryType == "Passwort":
@@ -298,7 +296,7 @@ for i, entryType in enumerate(LabelsReset):
     entryBox.config(font=('Arial', 18))
     EntryBoxesPassword.append(entryBox)
 
-ChangePasswordButton = Button(ChangePasswordFrame, text="Registrieren", command=ChangePassword)
+ChangePasswordButton = Button(ChangePasswordFrame, text="Zurücksetzen", command=ChangePassword)
 ChangePasswordButton.grid(row=8, column=1)
 #abrechnung
 # def AbrechnungTable():
