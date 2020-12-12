@@ -120,7 +120,7 @@ def Logout(): # excecute button
         hashed = hashed.replace("('", "")
         hashed = hashed.replace("',)", "")
         if bcrypt.checkpw((passwordIN.get()).encode("utf-8"), hashed.encode("utf-8")):
-            if float(electricityInBox.get()) >= electricityOldValue:
+            if float(electricityInBox.get()) > electricityOldValue:
                 Confirm(electricityOldValue, electricityInBox.get())
             else:
                 message.config(text="Bitte gib einen größeren Wert ein")
@@ -199,7 +199,7 @@ MACHINES = [
 # username combobox
 mycursor.execute("SELECT username FROM h15.benutzer")
 usernames = mycursor.fetchall()
-print(usernames)
+
 userCount = 0
 
 for user in usernames:
@@ -239,7 +239,7 @@ def on_select(event):
     try:
         usernameOptions = event.widget.get(event.widget.curselection())
     except:
-        print("")
+        None
     entry.delete(0, END)
     entry.insert(0, usernameOptions)
 
@@ -287,7 +287,6 @@ def ChangePassword():
         hashedold = str(mycursor.fetchone())
         hashedold = hashedold.replace("('", "")
         hashedold = hashedold.replace("',)", "")
-        print('%s , %s' % (str(entrylistPassword[2].encode("utf-8")), str(hashedold.encode("utf-8"))))
         if bcrypt.checkpw(entrylistPassword[2].encode("utf-8"), hashedold.encode("utf-8")):
             try:
                 mycursor.execute("UPDATE benutzer SET Passwort = '%s' WHERE Vorname = '%s' AND Nachname = '%s' AND Username = '%s' AND Etage = '%s'" % (hashed, entrylistPassword[0], entrylistPassword[1], entrylistPassword[5], entrylistPassword[6]))
