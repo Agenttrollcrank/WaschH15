@@ -278,7 +278,7 @@ def ChangePassword():
     entrylistPassword = []
     for entries in EntryBoxesPassword:
         entrylistPassword.append(entries.get())
-    hashed = bcrypt.hashpw(entrylistPassword[2].encode("utf-8"), bcrypt.gensalt())
+    hashed = bcrypt.hashpw(entrylistPassword[3].encode("utf-8"), bcrypt.gensalt())
     hashed = str(hashed).replace("b'", "")
     hashed = str(hashed).replace("'", "")
     if entrylistPassword[4] == entrylistPassword[3] and entrylistPassword[4] != "":
@@ -290,6 +290,7 @@ def ChangePassword():
         if bcrypt.checkpw(entrylistPassword[2].encode("utf-8"), hashedold.encode("utf-8")):
             try:
                 mycursor.execute("UPDATE benutzer SET Passwort = '%s' WHERE Vorname = '%s' AND Nachname = '%s' AND Username = '%s' AND Etage = '%s'" % (hashed, entrylistPassword[0], entrylistPassword[1], entrylistPassword[5], entrylistPassword[6]))
+                print("UPDATE benutzer SET Passwort = '%s' WHERE Vorname = '%s' AND Nachname = '%s' AND Username = '%s' AND Etage = '%s'" % (hashed, entrylistPassword[0], entrylistPassword[1], entrylistPassword[5], entrylistPassword[6]))
                 message.config(text="Passwort wurde aktualisiert")
             except:
                 message.config(text="Es gibt einen Fehler sorry, versuche es nochmal")
@@ -301,7 +302,7 @@ def ChangePassword():
     for entries in EntryBoxesPassword:
         entries.delete(0, END)
 
-LabelsReset = ["Vorname", "Nachname", "Alte Passwot", "Neues Passwort","Neues Passwort Wiederholen", "Username", "Etage"]
+LabelsReset = ["Vorname", "Nachname", "Alte Passwort", "Neues Passwort","Neues Passwort Wiederholen", "Username", "Etage"]
 for i, entryType in enumerate(LabelsReset):
     label = Label(ChangePasswordFrame, text=entryType + ": ")
     if entryType == "Passwort":
