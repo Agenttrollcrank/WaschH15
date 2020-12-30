@@ -28,8 +28,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/GUI.pyw">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
-              <caret line="292" column="56" selection-start-line="292" selection-start-column="56" selection-end-line="292" selection-end-column="56" />
+            <state relative-caret-position="304">
+              <caret line="130" column="52" lean-forward="true" selection-start-line="130" selection-start-column="52" selection-end-line="130" selection-end-column="52" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -98,7 +98,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -115,6 +114,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -325,7 +325,14 @@
       <option name="project" value="LOCAL" />
       <updated>1607816511639</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="bug fixes password reset">
+      <created>1608215340532</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1608215340532</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -359,7 +366,8 @@
     <MESSAGE value="register" />
     <MESSAGE value="username search" />
     <MESSAGE value="bug fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fixes" />
+    <MESSAGE value="bug fixes password reset" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fixes password reset" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -410,8 +418,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/GUI.pyw">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="292" column="56" selection-start-line="292" selection-start-column="56" selection-end-line="292" selection-end-column="56" />
+        <state relative-caret-position="304">
+          <caret line="130" column="52" lean-forward="true" selection-start-line="130" selection-start-column="52" selection-end-line="130" selection-end-column="52" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
           </folding>

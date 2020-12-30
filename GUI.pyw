@@ -17,6 +17,7 @@ root = Tk()
 root.title("WaschH15")
 root.geometry("1080x850")
 
+
 try:
     logo = PhotoImage(file="D:/Github/WaschH15/hermann-logo-40.png")
     logolabel = Label(root, image=logo, justify=RIGHT)
@@ -120,7 +121,7 @@ def Logout(): # excecute button
         hashed = hashed.replace("('", "")
         hashed = hashed.replace("',)", "")
         if bcrypt.checkpw((passwordIN.get()).encode("utf-8"), hashed.encode("utf-8")):
-            if float(electricityInBox.get()) > electricityOldValue:
+            if float(electricityInBox.get()) >= electricityOldValue:
                 Confirm(electricityOldValue, electricityInBox.get())
             else:
                 message.config(text="Bitte gib einen größeren Wert ein")
