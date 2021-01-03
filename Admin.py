@@ -3,14 +3,14 @@ import mysql.connector
 from tkinter import ttk
 import bcrypt
 
-mydb = mysql.connector.connect(
+mydb = mysql.connector.connect( #connects to the mysql databse
     user='Yulian',
     password='FreddyIstGeil',
     host='134.130.188.10',
     database='h15')
 
 mycursor = mydb.cursor(buffered=True)  # mysql cursor definition
-PowerWindow = Tk()  # define the windown
+PowerWindow = Tk()  # define the window
 PowerWindow.title("Register")
 PowerWindow.geometry("1080x850")
 

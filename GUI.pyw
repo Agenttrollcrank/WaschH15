@@ -1,3 +1,6 @@
+#Made by: Yulian Messina
+#The code is somewhat pretty. I atleast added a lot of comments
+#If this ever does break you can contact me at yulian.messina@rwth-aachen.de
 from tkinter import *
 import mysql.connector
 from tkinter import ttk
@@ -12,25 +15,20 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor(buffered=True)  # mysql cursor definition
 
+
 # define the windown
 root = Tk()
 root.title("WaschH15")
 root.geometry("1080x850")
 
-
-try:
-    logo = PhotoImage(file="D:/Github/WaschH15/hermann-logo-40.png")
-    logolabel = Label(root, image=logo, justify=RIGHT)
-    logolabel.pack()
-except:
-    pass
+#add the graphical Title
 titleLabel = Label(root, text="WaschH15")
 titleLabel.pack()
 titleLabel.config(font=('Arial', 24))
 
+#Using tkinter notebook to have multiple tabs
 Notebook = ttk.Notebook(root)
 Notebook.pack(pady=15)
-
 WaschGUI = Frame(Notebook)
 ChangePasswordFrame = Frame(Notebook)
 
@@ -42,49 +40,52 @@ Notebook.add(ChangePasswordFrame, text="Passwort ändern")
 
 Table = LabelFrame(root, padx=5, pady=5)
 
-# variable definitions
+#Global variable definitions
 electricityOldValue = int
 electricityPosb = [0]
 etagen = ["1","2","3","4","Altbau","Hinterlieger","Ehepaar_Neubau","Ehepaar_Hinterlieger","Einzel_Wohnung"]
 
-# confirmation window
-def Confirm(oldElectricity,newElectricity):
+#Confirmation window popup when someone tries to send a new record to the database
+def Confirm(oldElectricity,newElectricity, lastuser, electricityCurrent):
     top = Toplevel()
     top.grab_set()
     top.title("Bestätigung")
     Label(top, text="Alter Stromstand: %s" % (str(oldElectricity)), font=('Arial',14)).pack()
     Label(top, text="Neuer Stromstand: %s" % (str(newElectricity)), font=('Arial', 14)).pack()
-    Button(top, text="Bestätigen", command=lambda: [top.destroy(), SendNewRecord()],font=('Arial', 14)).pack()
+    Button(top, text="Bestätigen", command=lambda: [top.destroy(), SendNewRecord(lastuser, electricityCurrent)],font=('Arial', 14)).pack()
     Button(top, text="Exit", command=top.destroy, font=('Arial', 14)).pack()
     top.update_idletasks()
-    width = 220
-    height = 150
-    x = (top.winfo_screenwidth() // 2) - (width // 2)
-    y = (top.winfo_screenheight() // 2) - (height // 2)
-    top.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+    x = (top.winfo_screenwidth() // 2) - (220 // 2)
+    y = (top.winfo_screenheight() // 2) - (150 // 2)
+    top.geometry('{}x{}+{}+{}'.format(220, 150, x, y))
 
-def SendNewRecord():
-    global lastuser
-    global electricityCurrent
+#Sends the new Record to the databe
+#lastuser: The lastuser that washed at a specific machine
+#electricityCurrent: the value of the electricity
+def SendNewRecord(lastuser, electricityCurrent):
     try:
         if lastuser == usernameOptions and electricityCurrent == "None":
+            #This is when the last user is logging themselve out
             mycursor.execute(
                 "UPDATE h15.abrechnung SET Strom_bis = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (
                 str(electricityInBox.get()), usernameOptions, machineString.get()))
         else:
-            if (electricityCurrent != electricityInBox.get()) and electricityCurrent != "None":
+            #This is to catch the other cases
+            if (electricityCurrent != electricityInBox.get()) and electricityCurrent != "None" and lastuser != usernameOptions:
+                #This is when someone put wrong electricity value and we don't know who washed
                 mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
                 "Kameradenschwein", str(machineString.get()), str(electricityOldValue), electricityInBox.get()))
             else:
                 if electricityInBox.get() != electricityOldValue:
+                    #This is when the last user didn't logout and we assume they washed until now
                     mycursor.execute(
                         "UPDATE h15.abrechnung SET Strom_bis = %s WHERE username = '%s' AND machine = '%s' ORDER BY Strom_von DESC LIMIT 1" % (
                             str(electricityInBox.get()), lastuser, machineString.get()))
-            mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (
-            str(usernameOptions), str(machineString.get()), electricityInBox.get(), "NULL"))
-        mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityInBox.get()) + " WHERE Waschmachine = '" + str(
-            machineString.get()) + "'")
+            #This is the normal case and we just add the new record in
+            mycursor.execute("INSERT INTO abrechnung VALUES('%s','%s',%s,%s)" % (str(usernameOptions), str(machineString.get()), electricityInBox.get(), "NULL"))
+        mycursor.execute("UPDATE h15.strom SET Kwh = " + str(electricityInBox.get()) + " WHERE Waschmachine = '" + str(machineString.get()) + "'")
         message.config(text="Alles Klar, Danke Dir :D Die Tabelle wird aktualisiert")
+        #clear all the input fields
         electricityInBox.delete(0, END)
         electricityInBox.insert(0, electricityInBox.get())
         passwordIN.delete(0, END)
@@ -93,24 +94,20 @@ def SendNewRecord():
         TableUpdate(str(machineString.get()))
         NewSelection()
     except:
+        #all uncaught errors. If this ever happens have fun figuring out what. If you Yulian Messina still lives there go ask him
         message.config(text="Irgendwas ist schief gelaufen, melde dich beim Netzwerkverein")
     finally:
         root.update_idletasks()
         root.after(2000, message.config(text=""))
 
-
-# define the function for buttons
-
-def Logout(): # excecute button
-    global lastuser
-    global electricityCurrent
-    global sl
+#Get all necceary information to send the new record. Does this when the button is pressed
+def OnButtonPress(): # excecute button
     # credential check
-    mycursor.execute("SELECT username FROM h15.abrechnung WHERE machine = '%s' ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
+    mycursor.execute("SELECT username FROM h15.abrechnung WHERE machine = '%s' ORDER BY Strom_von DESC, Strom_bis ASC limit 0,1" % (machineString.get()))
     lastuser = str(mycursor.fetchone())
     lastuser = lastuser.replace("('","")
     lastuser = lastuser.replace("',)","")
-    mycursor.execute("SELECT Strom_bis FROM h15.abrechnung WHERE machine = '%s' ORDER BY Strom_von DESC limit 0,1" % (machineString.get()))
+    mycursor.execute("SELECT Strom_bis FROM h15.abrechnung WHERE machine = '%s' ORDER BY Strom_von DESC, Strom_bis ASC limit 0,1" % (machineString.get()))
     electricityCurrent = str(mycursor.fetchone())
     electricityCurrent = electricityCurrent.replace("(","")
     electricityCurrent = electricityCurrent.replace(",)","")
@@ -122,7 +119,7 @@ def Logout(): # excecute button
         hashed = hashed.replace("',)", "")
         if bcrypt.checkpw((passwordIN.get()).encode("utf-8"), hashed.encode("utf-8")):
             if float(electricityInBox.get()) >= electricityOldValue:
-                Confirm(electricityOldValue, electricityInBox.get())
+                Confirm(electricityOldValue, electricityInBox.get(), lastuser, electricityCurrent)
             else:
                 message.config(text="Bitte gib einen größeren Wert ein")
         else:
@@ -258,7 +255,7 @@ listbox_update(usernames)
 passwordIN = Entry(WaschGUI, show="*", width=25)
 electricityInBox = ttk.Combobox(WaschGUI, value=electricityPosb)
 electricityInBox.current(0)
-logout = Button(WaschGUI, text="Eintragen", command=Logout)
+logout = Button(WaschGUI, text="Eintragen", command=OnButtonPress)
 
 usernameLabel = Label(WaschGUI, text="Benutzername: ")
 passwordLabel = Label(WaschGUI, text="Passwort: ")
@@ -291,7 +288,6 @@ def ChangePassword():
         if bcrypt.checkpw(entrylistPassword[2].encode("utf-8"), hashedold.encode("utf-8")):
             try:
                 mycursor.execute("UPDATE benutzer SET Passwort = '%s' WHERE Vorname = '%s' AND Nachname = '%s' AND Username = '%s' AND Etage = '%s'" % (hashed, entrylistPassword[0], entrylistPassword[1], entrylistPassword[5], entrylistPassword[6]))
-                print("UPDATE benutzer SET Passwort = '%s' WHERE Vorname = '%s' AND Nachname = '%s' AND Username = '%s' AND Etage = '%s'" % (hashed, entrylistPassword[0], entrylistPassword[1], entrylistPassword[5], entrylistPassword[6]))
                 message.config(text="Passwort wurde aktualisiert")
             except:
                 message.config(text="Es gibt einen Fehler sorry, versuche es nochmal")
