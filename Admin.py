@@ -39,8 +39,16 @@ def Register():
     if entrylistRegister[2] == entrylistRegister[3] and entrylistRegister[2] != "":
         if entrylistRegister[6] == "h15rocks!":
             if any(entrylistRegister[5] == etage for etage in etagen):
-                mycursor.execute("INSERT INTO benutzer (Vorname,Nachname,Passwort,Username,Etage,Ablaufdatum) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')"
-                                 %(entrylistRegister[0], entrylistRegister[1], hashed, entrylistRegister[4], entrylistRegister[5],entrylistRegister[7]))
+                if entrylistRegister[7] == "":
+                    mycursor.execute(
+                        "INSERT INTO benutzer (Vorname,Nachname,Passwort,Username,Etage) VALUES ('%s', '%s', '%s', '%s', '%s')" % (
+                        entrylistRegister[0], entrylistRegister[1], hashed, entrylistRegister[4], entrylistRegister[5]))
+                else:
+                    mycursor.execute(
+                        "INSERT INTO benutzer (Vorname,Nachname,Passwort,Username,Etage,Ablaufdatum) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')"
+                        % (
+                        entrylistRegister[0], entrylistRegister[1], hashed, entrylistRegister[4], entrylistRegister[5],
+                        entrylistRegister[7]))
                 mydb.commit()
                 message.config(text="Benutzer wurde erfolgreich \n zum System hinzugefügt")
                 for entries in EntryBoxesRegister:
