@@ -39,8 +39,8 @@ def Register():
     if entrylistRegister[2] == entrylistRegister[3] and entrylistRegister[2] != "":
         if entrylistRegister[6] == "h15rocks!":
             if any(entrylistRegister[5] == etage for etage in etagen):
-                mycursor.execute("INSERT INTO benutzer (Vorname,Nachname,Passwort,Username,Etage) VALUES ('%s', '%s', '%s', '%s', '%s')"
-                                 %(entrylistRegister[0], entrylistRegister[1], hashed, entrylistRegister[4], entrylistRegister[5]))
+                mycursor.execute("INSERT INTO benutzer (Vorname,Nachname,Passwort,Username,Etage,Ablaufdatum) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')"
+                                 %(entrylistRegister[0], entrylistRegister[1], hashed, entrylistRegister[4], entrylistRegister[5],entrylistRegister[7]))
                 mydb.commit()
                 message.config(text="Benutzer wurde erfolgreich \n zum System hinzugefügt")
                 for entries in EntryBoxesRegister:
@@ -78,7 +78,7 @@ def ResetPassword():
         entries.delete(0, END)
 
 # things played on the screen
-LabelsRegister = ["Vorname", "Nachname", "Passwort", "Passwort Wiederholen","Username", "Etage","Admin_Passwort"]
+LabelsRegister = ["Vorname", "Nachname", "Passwort", "Passwort Wiederholen","Username", "Etage","Admin_Passwort", "Ablaufdatum"]
 EntryBoxesRegister = []
 for i, entryType in enumerate(LabelsRegister):
     label = Label(RegisterFrame, text=entryType + ": ")
@@ -109,7 +109,7 @@ for i, entryType in enumerate(LabelsReset):
     EntryBoxesPassword.append(entryBox)
 
 registerButton = Button(RegisterFrame, text="Eintragen", command=Register)
-registerButton.grid(row=7, column=1)
+registerButton.grid(row=8, column=1)
 resetButton = Button(PasswordResetFrame, text="Reset", command=ResetPassword)
 resetButton.grid(row=8, column=1)
 message = Label(PowerWindow, text="")

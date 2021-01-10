@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6d7f4f75-86af-4328-9a74-5d436b56b03a" name="Default Changelist" comment="" />
+    <list default="true" id="6d7f4f75-86af-4328-9a74-5d436b56b03a" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/Admin.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,42 +17,58 @@
         <counts>
           <entry key="project.closed" value="4" />
           <entry key="project.open.time.4" value="1" />
-          <entry key="project.open.time.5" value="1" />
+          <entry key="project.open.time.5" value="2" />
           <entry key="project.open.time.7" value="1" />
           <entry key="project.open.time.8" value="1" />
-          <entry key="project.opened" value="4" />
+          <entry key="project.opened" value="5" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="42" />
+          <entry key="py" value="122" />
           <entry key="pyw" value="1576" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="1618" />
+          <entry key="Python" value="1698" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
+          <entry key="py" value="1" />
           <entry key="pyw" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="1" />
+          <entry key="Python" value="2" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/GUI.pyw">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="50" column="18" lean-forward="true" selection-start-line="50" selection-start-column="18" selection-end-line="50" selection-end-column="18" />
+            <state>
+              <caret line="87" column="9" selection-start-line="87" selection-start-column="9" selection-end-line="87" selection-end-column="9" />
+              <folding>
+                <element signature="e#166#187#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Admin.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="236">
+              <caret line="38" column="83" lean-forward="true" selection-start-line="38" selection-start-column="83" selection-end-line="38" selection-end-column="83" />
+              <folding>
+                <element signature="e#0#21#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -101,8 +120,8 @@
         <option value="$PROJECT_DIR$/Abrechnung.py" />
         <option value="$PROJECT_DIR$/GUI.py" />
         <option value="$PROJECT_DIR$/test.py" />
-        <option value="$PROJECT_DIR$/Admin.py" />
         <option value="$PROJECT_DIR$/GUI.pyw" />
+        <option value="$PROJECT_DIR$/Admin.py" />
       </list>
     </option>
   </component>
@@ -119,6 +138,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -135,7 +155,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -164,7 +183,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.GUI.pyw">
+  <component name="RunManager" selected="Python.Admin">
     <configuration name="Abrechnung" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="WaschH15" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -279,10 +298,10 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.GUI.pyw" />
         <item itemvalue="Python.Admin" />
-        <item itemvalue="Python.test" />
+        <item itemvalue="Python.GUI.pyw" />
         <item itemvalue="Python.GUI" />
+        <item itemvalue="Python.test" />
         <item itemvalue="Python.Abrechnung" />
       </list>
     </recent_temporary>
@@ -366,13 +385,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13645943" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13645943" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.123644255" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.27223426" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39869988" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -428,17 +448,23 @@
     <entry file="file://$PROJECT_DIR$/GUI.py" />
     <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python38/Lib/tkinter/__init__.py" />
     <entry file="file://$PROJECT_DIR$/test.py" />
-    <entry file="file://$PROJECT_DIR$/Admin.py">
+    <entry file="file://$PROJECT_DIR$/GUI.pyw">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="14" column="32" lean-forward="true" selection-start-line="14" selection-start-column="32" selection-end-line="14" selection-end-column="32" />
+        <state>
+          <caret line="87" column="9" selection-start-line="87" selection-start-column="9" selection-end-line="87" selection-end-column="9" />
+          <folding>
+            <element signature="e#166#187#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/GUI.pyw">
+    <entry file="file://$PROJECT_DIR$/Admin.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="50" column="18" lean-forward="true" selection-start-line="50" selection-start-column="18" selection-end-line="50" selection-end-column="18" />
+        <state relative-caret-position="236">
+          <caret line="38" column="83" lean-forward="true" selection-start-line="38" selection-start-column="83" selection-end-line="38" selection-end-column="83" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
