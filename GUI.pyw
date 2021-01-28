@@ -304,6 +304,8 @@ for i, entryType in enumerate(LabelsReset):
     label = Label(ChangePasswordFrame, text=entryType + ": ")
     if entryType == "Passwort":
         entryBox = Entry(ChangePasswordFrame, show="*", width=25)
+    if entryType == "Etage":
+        entryBox = ttk.Combobox(ChangePasswordFrame, value=etagen)
     else:
         entryBox = Entry(ChangePasswordFrame, width=25)
     label.grid(row=i, column=0)
